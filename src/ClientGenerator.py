@@ -1,7 +1,11 @@
+import json
 import os
 import sys
 
 from argparse import Namespace
+from typing import Dict
+
+from src.generator_types import Schema
 
 
 class ClientGenerator:
@@ -41,7 +45,13 @@ class ClientGenerator:
             print(f"The destination folder: {arguments.dest} exist and is not empty. You must call the program with a valid folder.")
             sys.exit(73)
 
+    def _build_schemas(self, schemas: Dict[str, Schema]):
+        pass
+
     def create_client(self):
         """Generate the python client from the arguments given
         """
+        with open(self._open_api_file_path, "r") as f:
+            open_api_file = json.load(f)
+        schemas: Dict[str, Schema] = open_api_file["components"]["schemas"]
         
