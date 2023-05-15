@@ -4,9 +4,9 @@ import sys
 
 from argparse import Namespace
 from typing import Dict
-from generators.ModelGenerator import ModelGenerator
+from src.generators.ModelGenerator import ModelGenerator
 
-from generators.generator_types import Schema
+from src.generators.generator_types import Schema
 
 
 class ClientGenerator:
@@ -58,7 +58,7 @@ class ClientGenerator:
         """
         if not os.path.exists(self._dest_folder):
             parent = os.path.dirname(self._dest_folder)
-            if not os.path.exists(parent):
+            if parent and not os.path.exists(parent):
                 print(f"Error: parent directory of the specified destination: {parent} does not exist. Can't create output file")
                 sys.exit(1)
             os.mkdir(self._dest_folder)

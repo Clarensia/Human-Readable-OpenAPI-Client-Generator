@@ -2,7 +2,7 @@ import os
 
 from typing import Any, Dict
 
-from generators.generator_types import Property, Schema
+from src.generators.generator_types import Property, Schema
 
 
 class ModelGenerator:
