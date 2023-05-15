@@ -31,27 +31,53 @@ class ClientGenerator:
         Correct arguments currently means:
         - arguments.file exist
         - arguments.dest does not exist, or if it exists, it must be an empty folder
-
-        exit the program with 66 (cannot open) if arguments.file does not exist
-        exit the program with 73 (can't create user output file) if arguments.dest is a non-empty folder or a file
+        - argument.dest is a file
 
         :param arguments: The program arguments that we have to verify
         :type arguments: Namespace
         """
         if not os.path.isfile(arguments.file):
             print(f"The file at path: {arguments.file} does not exist, please provide a valid input file")
-            sys.exit(66)
+            sys.exit(1)
         if os.path.isdir(arguments.dest) and len(os.listdir(arguments.dest)) > 0:
             print(f"The destination folder: {arguments.dest} exist and is not empty. You must call the program with a valid folder.")
-            sys.exit(73)
+            sys.exit(1)
+        if os.path.isfile(arguments.dest):
+            print(f"The destination folder: {arguments.dest} is a file, it should be either an empty folder or not exist.")
+            sys.exit(1)
 
     def _build_schemas(self, schemas: Dict[str, Schema]):
+        """Build the schemas and write them inside of the model folder.
+        
+        If the given shema is an exception, it writes it inside of "exceptions"
+
+        :param schemas: The dictionary containing as key the schema id and as value the
+                        schema object that we have to create
+        :type schemas: Dict[str, Schema]
+        """
         pass
+
+    def _init_dest_folder(self):
+        """Create the destination folder if not exist as well as the
+        child folders:
+        - models
+        - exceptions
+        """
+        if not os.path.exists(self._dest_folder):
+            parent = os.path.dirname(self._dest_folder)
+            if not os.path.exists(parent):
+                print(f"Error: parent directory of the specified destination: {parent} does not exist. Can't create output file")
+                sys.exit(1)
+            os.mkdir(self._dest_folder)
+
+        os.mkdir(os.path.join(self._dest_folder, "model"))
+        os.mkdir(os.path.join(self._dest_folder, "exception"))
 
     def create_client(self):
         """Generate the python client from the arguments given
         """
         with open(self._open_api_file_path, "r") as f:
             open_api_file = json.load(f)
+        self._init_dest_folder()
         schemas: Dict[str, Schema] = open_api_file["components"]["schemas"]
-        
+        self._build_schemas(schemas)
