@@ -1,6 +1,6 @@
-from typing import Dict
+from typing import Any, Dict
 
-from generators.generator_types import Schema
+from generators.generator_types import Property, Schema
 
 
 class ModelGenerator:
@@ -100,7 +100,7 @@ class ModelGenerator:
         """
 
         def __init__(self, blockchain: str, exchange: str, tokenIn: str, tokenOut: str, amountIn: str, amountOut: str, **_):
-            """Creates an AmountIn model
+            """Instantiate an AmountIn model
 
             :param blockchain: The id of blockchain on which the exchange is taking place
             :type blockchain: str
@@ -136,6 +136,63 @@ class ModelGenerator:
         self._models_path = models_path
         self._exceptions_path = exceptions_path
 
+    def _add_first_lines(self, model_name: str) -> str:
+        return f'''
+from dataclasses import dataclass
+
+
+@dataclass(slots=True, frozen=True)
+class {model_name}:
+    """The {model_name} model"""
+
+'''
+
+    def _add_property(self, property_name: str, _property: Property, example: Any) -> str:
+        ret = ""
+        match _property["type"]:
+            case "string":
+               ret += f"    {property_name}: str\n"
+               ret += '     """' + _property["default"] + "\n"
+               ret += f'\n    Example: "{example}"\n'
+               ret += '    """\n\n'
+            case "integer":
+                ret += f"    {property_name}: int\n"
+                ret += '    """' + _property["default"] + "\n"
+                ret += f'\n    Example: {example}\n'
+                ret += '    """\n\n'
+            case _:
+                raise Exception(f'The generator does not support the type {_property["type"]} please open an issue on: https://github.com/Clarensia/Human-Readable-OpenAPI-Client-Generator/issues')
+        return ret
+
+    def _create_constructor_doc_field(self, property_name: str, _property: Property):
+        ret = f'        :param {property_name}: {property["default"]}\n'
+        match _property["type"]:
+            case "string":
+                ret += f'        :type {property_name}: str'
+            case "integer":
+                ret += f'        :type {property_name}: str'
+        return ret
+
+    def _add_constructor(self, schema_name: str, schema: Schema) -> str:
+        ret = ""
+        ret += "    def __init__(self"
+        for property_name in schema["properties"]:
+            ret += ", "
+            ret += property_name
+            match schema["properties"][property_name]:
+                case "string":
+                    ret += ": str"
+                case "integer":
+                    ret += ": int"
+        ret += ":\n"
+        ret += f'        """Instantiate an {schema_name} model\n\n'
+        for property_name in schema["properties"]:
+            ret += self._create_constructor_doc_field(property_name, schema["properties"][property_name])
+        ret += '        """\n'
+        for property_name in schema["properties"]:
+            ret += f'    self.{property_name} = {property_name}'
+        return ret
+
     def build_models(self, schemas: Dict[str, Schema]):
         """Build the schemas and write them inside of the model folder.
         
@@ -147,4 +204,10 @@ class ModelGenerator:
         """
         for schema_name in schemas:
             schema = schemas[schema_name]
-            
+            to_write = ""
+            to_write += self._add_first_lines(schema_name)
+            for property_name in schema["properties"]:
+                _property = schema["properties"][property_name]
+                to_write += self._add_property(property_name, _property, schema["example"][property_name])
+            to_write += self._add_constructor(schema_name, schema)
+            to_write += "\n"
