@@ -3,7 +3,7 @@ from typing import Dict, TypedDict
 Property = TypedDict('Property', {
     "title": str,
     "type": str,
-    "default": str
+    "description": str
 })
 
 Schema = TypedDict('Schema', {

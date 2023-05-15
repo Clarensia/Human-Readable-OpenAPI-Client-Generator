@@ -23,32 +23,32 @@ class ModelGenerator:
             "blockchain": {
                 "title": "Blockchain",
                 "type": "string",
-                "default": "The id of blockchain on which the exchange is taking place"
+                "description": "The id of blockchain on which the exchange is taking place"
             },
             "exchange": {
                 "title": "Exchange",
                 "type": "string",
-                "default": "The id of the exchange used for this trade"
+                "description": "The id of the exchange used for this trade"
             },
             "tokenIn": {
                 "title": "Tokenin",
                 "type": "string",
-                "default": "The address of the token that you sell"
+                "description": "The address of the token that you sell"
             },
             "tokenOut": {
                 "title": "Tokenout",
                 "type": "string",
-                "default": "The address of the token that you buy"
+                "description": "The address of the token that you buy"
             },
             "amountOut": {
                 "title": "Amountout",
                 "type": "integer",
-                "default": "The amount of token1 that you wish to buy"
+                "description": "The amount of token1 that you wish to buy"
             },
             "amountIn": {
                 "title": "Amountin",
                 "type": "integer",
-                "default": "The amount of token0 that you have to sell in order to get amountOut token1"
+                "description": "The amount of token0 that you have to sell in order to get amountOut token1"
             }
         },
         "example": {
@@ -159,12 +159,12 @@ class {model_name}:
         match _property["type"]:
             case "string":
                ret += f"    {property_name}: str\n"
-               ret += '     """' + _property["default"] + "\n"
+               ret += '     """' + _property["description"] + "\n"
                ret += f'\n    Example: "{example}"\n'
                ret += '    """\n\n'
             case "integer":
                 ret += f"    {property_name}: int\n"
-                ret += '    """' + _property["default"] + "\n"
+                ret += '    """' + _property["description"] + "\n"
                 ret += f'\n    Example: {example}\n'
                 ret += '    """\n\n'
             case _:
@@ -172,7 +172,7 @@ class {model_name}:
         return ret
 
     def _create_constructor_doc_field(self, property_name: str, _property: Property):
-        ret = f'        :param {property_name}: {property["default"]}\n'
+        ret = f'        :param {property_name}: {_property["description"]}\n'
         match _property["type"]:
             case "string":
                 ret += f'        :type {property_name}: str'
@@ -186,7 +186,7 @@ class {model_name}:
         for property_name in schema["properties"]:
             ret += ", "
             ret += property_name
-            match schema["properties"][property_name]:
+            match schema["properties"][property_name]["type"]:
                 case "string":
                     ret += ": str"
                 case "integer":
