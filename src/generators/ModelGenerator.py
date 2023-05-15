@@ -143,8 +143,18 @@ class ModelGenerator:
         self._models_path = models_path
         self._exceptions_path = exceptions_path
 
-    def _add_first_lines(self, model_name: str) -> str:
-        return f'''
+    def _has_array(self, properties: Dict[str, Property]) -> bool:
+        for property_name in properties:
+            if properties[property_name]["type"] == "array":
+                return True
+
+        return False
+
+    def _add_first_lines(self, model_name: str, properties: Dict[str, Property]) -> str:
+        ret = ""
+        if self._has_array(properties):
+            ret += "from typing import List\n"
+        ret += f'''
 from dataclasses import dataclass
 
 
@@ -153,6 +163,7 @@ class {model_name}:
     """The {model_name} model"""
 
 '''
+        return ret
 
     def _add_property(self, property_name: str, _property: Property, example: Any) -> str:
         ret = ""
@@ -167,6 +178,8 @@ class {model_name}:
                 ret += '    """' + _property["description"] + "\n"
                 ret += f'\n    Example: {example}\n'
                 ret += '    """\n\n'
+            case "array":
+                ret += f"    {property_name}: List[]"
             case _:
                 raise Exception(f'The generator does not support the type {_property["type"]} please open an issue on: https://github.com/Clarensia/Human-Readable-OpenAPI-Client-Generator/issues')
         return ret
@@ -216,7 +229,7 @@ class {model_name}:
         for schema_name in schemas:
             schema = schemas[schema_name]
             to_write = ""
-            to_write += self._add_first_lines(schema_name)
+            to_write += self._add_first_lines(schema_name, schema["properties"])
             for property_name in schema["properties"]:
                 _property = schema["properties"][property_name]
                 to_write += self._add_property(property_name, _property, schema["example"][property_name])
