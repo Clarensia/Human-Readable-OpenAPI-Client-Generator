@@ -1,3 +1,5 @@
+import os
+
 from typing import Any, Dict
 
 from generators.generator_types import Property, Schema
@@ -132,6 +134,11 @@ class ModelGenerator:
     from the returned value is a misstake.
     '''
     
+    _models_path: str
+    """The path to the model folder"""
+    _exceptions_path: str
+    """The path to the exception folder"""
+    
     def __init__(self, models_path: str, exceptions_path: str):
         self._models_path = models_path
         self._exceptions_path = exceptions_path
@@ -193,6 +200,10 @@ class {model_name}:
             ret += f'    self.{property_name} = {property_name}'
         return ret
 
+    def _write_model(self, model_name: str, model_text: str):
+        with open(os.path.join(self._models_path, model_name), "w+") as f:
+            f.write(model_text)
+
     def build_models(self, schemas: Dict[str, Schema]):
         """Build the schemas and write them inside of the model folder.
         
@@ -211,3 +222,4 @@ class {model_name}:
                 to_write += self._add_property(property_name, _property, schema["example"][property_name])
             to_write += self._add_constructor(schema_name, schema)
             to_write += "\n"
+            self._write_model(schema_name, to_write)
