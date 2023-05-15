@@ -4,8 +4,9 @@ import sys
 
 from argparse import Namespace
 from typing import Dict
+from generators.ModelGenerator import ModelGenerator
 
-from src.generator_types import Schema
+from generators.generator_types import Schema
 
 
 class ClientGenerator:
@@ -20,6 +21,9 @@ class ClientGenerator:
         self._verify_args(arguments)
         self._open_api_file_path = arguments.file
         self._dest_folder = arguments.dest
+        self._models_folder = os.path.join(self._dest_folder, "models")
+        self._exceptions_folder = os.path.join(self._dest_folder, "exceptions")
+        self._model_generator = ModelGenerator(self._models_folder, self._exceptions_folder)
 
     def _verify_args(self, arguments: Namespace):
         """Verify if the arguments are correct. It prints an error if the arguments
@@ -46,17 +50,6 @@ class ClientGenerator:
             print(f"The destination folder: {arguments.dest} is a file, it should be either an empty folder or not exist.")
             sys.exit(1)
 
-    def _build_schemas(self, schemas: Dict[str, Schema]):
-        """Build the schemas and write them inside of the model folder.
-        
-        If the given shema is an exception, it writes it inside of "exceptions"
-
-        :param schemas: The dictionary containing as key the schema id and as value the
-                        schema object that we have to create
-        :type schemas: Dict[str, Schema]
-        """
-        pass
-
     def _init_dest_folder(self):
         """Create the destination folder if not exist as well as the
         child folders:
@@ -70,8 +63,8 @@ class ClientGenerator:
                 sys.exit(1)
             os.mkdir(self._dest_folder)
 
-        os.mkdir(os.path.join(self._dest_folder, "model"))
-        os.mkdir(os.path.join(self._dest_folder, "exception"))
+        os.mkdir(self._models_folder)
+        os.mkdir(self._exceptions_folder)
 
     def create_client(self):
         """Generate the python client from the arguments given
@@ -80,4 +73,4 @@ class ClientGenerator:
             open_api_file = json.load(f)
         self._init_dest_folder()
         schemas: Dict[str, Schema] = open_api_file["components"]["schemas"]
-        self._build_schemas(schemas)
+        self._model_generator.build_models(schemas)
