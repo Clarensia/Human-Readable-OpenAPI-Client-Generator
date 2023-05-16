@@ -938,8 +938,15 @@
                     "fee": {
                         "title": "Fee",
                         "type": "integer",
-                        "description": "The fee of the pair in 100000 of percents"
+                        "description": "The fee of the pair in 100000 of percents (for example: 1000 is 1%)"
                     }
+                },
+                "example": {
+                    "blockchain": "ethereum",
+                    "exchange": "uniswapv2_ethereum",
+                    "token0": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+                    "token1": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+                    "fee": 300
                 }
             },
             "Pairs": {
@@ -972,19 +979,21 @@
                 },
                 "example": {
                     "page": 1,
-                    "total_pages": 211,
+                    "total_pages": 1804,
                     "data": [
                         {
-                            "blockchain": "avalanche",
-                            "exchange": "lydia_finance_avalanche",
-                            "token0": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
-                            "token1": "0xde3A24028580884448a5397872046a019649b084"
+                            "blockchain": "ethereum",
+                            "exchange": "uniswapv2_ethereum",
+                            "token0": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+                            "token1": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+                            "fee": 300
                         },
                         {
-                            "blockchain": "avalanche",
-                            "exchange": "lydia_finance_avalanche",
-                            "token0": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
-                            "token1": "0xf20d962a6c8f70c731bd838a3a388D7d48fA6e15"
+                            "blockchain": "ethereum",
+                            "exchange": "uniswapv2_ethereum",
+                            "token0": "0x8E870D67F660D95d5be530380D0eC0bd388289E1",
+                            "token1": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+                            "fee": 300
                         }
                     ]
                 }
