@@ -314,7 +314,7 @@ class {model_name}:
             ret += self._create_constructor_doc_field(property_name, schema["properties"][property_name])
         ret += '        """\n'
         for property_name in schema["properties"]:
-            ret += f'    self.{property_name} = {property_name}\n'
+            ret += f'        self.{property_name} = {property_name}\n'
         return ret
 
     def _write_model(self, model_name: str, model_text: str):
