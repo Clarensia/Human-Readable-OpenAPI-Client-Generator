@@ -44,7 +44,7 @@ class ClientGenerator:
             print(f"The file at path: {arguments.file} does not exist, please provide a valid input file")
             sys.exit(1)
         if os.path.isdir(arguments.dest) and len(os.listdir(arguments.dest)) > 0:
-            print(f"The destination folder: {arguments.dest} exist and is not empty. You must call the program with a valid folder.")
+            print(f"The destination folder: {arguments.dest} exist and is not empty. You must call the program with an empty or non-existant folder.")
             sys.exit(1)
         if os.path.isfile(arguments.dest):
             print(f"The destination folder: {arguments.dest} is a file, it should be either an empty folder or not exist.")
