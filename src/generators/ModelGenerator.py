@@ -175,7 +175,7 @@ class ModelGenerator:
         """
         if _property["type"] != "array":
             raise Exception("ModelGenerator: _get_array_type: Called _get_array_type with a type that is not \"array\":", _property["type"])
-        ref = _property["type"]["$ref"]
+        ref = _property["items"]["$ref"]
         return ref.split("/")[-1]
 
     def _get_array_types(self, properties: Dict[str, Property]) -> List[str]:
@@ -277,7 +277,7 @@ class {model_name}:
         return ret
 
     def _write_model(self, model_name: str, model_text: str):
-        with open(os.path.join(self._models_path, model_name), "w+") as f:
+        with open(os.path.join(self._models_path, model_name + ".py"), "w+") as f:
             f.write(model_text)
 
     def build_models(self, schemas: Dict[str, Schema]):
@@ -290,6 +290,9 @@ class {model_name}:
         :type schemas: Dict[str, Schema]
         """
         for schema_name in schemas:
+            # We will handle errors later
+            if "Error" in schema_name:
+                continue
             schema = schemas[schema_name]
             to_write = ""
             to_write += self._add_first_lines(schema_name, schema["properties"])
