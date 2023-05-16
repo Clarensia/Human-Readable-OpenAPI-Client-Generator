@@ -1,7 +1,8 @@
 from typing import Dict, TypedDict
 
-class ItemsDict(TypedDict):
+ItemsDict = TypedDict('ItemsDict', {
     "$ref": str
+})
 
 class PropertyOptional(TypedDict, total=False):
     items: ItemsDict    
