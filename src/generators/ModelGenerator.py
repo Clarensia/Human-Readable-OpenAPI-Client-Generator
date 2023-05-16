@@ -236,7 +236,6 @@ class ModelGenerator:
         ret += self._add_special_imports(properties)
         ret += f'''
 
-
 @dataclass(slots=True, frozen=True)
 class {model_name}:
     """The {model_name} model"""
@@ -341,5 +340,4 @@ class {model_name}:
                 _property = schema["properties"][property_name]
                 to_write += self._add_property(property_name, _property, schema["example"][property_name])
             to_write += self._add_constructor(schema_name, schema)
-            to_write += "\n"
             self._write_model(schema_name, to_write)
