@@ -242,7 +242,25 @@ class {model_name}:
 
 '''
         return ret
-        
+
+    def _format_example_array(self, space_add: int, example: List[Dict[str, str | int]]) -> str:
+        """Allow to format the array for a description. It will json.dumps the array
+        and then add the given space_add
+
+        :param space_add: The space to add after each new line
+        :type space_add: int
+        :param example: The example array that we have to print
+        :type example: List[Dict[str, str  |  int]]
+        :return: The string formatted correctly
+        :rtype: str
+        """
+        # Create the json string
+        json_string = json.dumps(example, indent=4)
+        # Add space_add spaces
+        indentation = ' ' * space_add
+        # Add the 4 spaces at the beginning of each lines
+        space_added = '\n'.join(indentation + line for line in json_string.splitlines())
+        return space_added
 
     def _add_property(self, property_name: str, _property: Property, example: Any) -> str:
         ret = ""
@@ -262,8 +280,8 @@ class {model_name}:
                 ret += f"    {property_name}: List[" + array_type + "]\n"
                 ret += '    """' + _property["description"] + "\n"
                 ret += "\n    Example:\n"
-                ret += json.dumps(example, indent=4)
-                ret += '    """\n\n'
+                ret += self._format_example_array(4, example)
+                ret += '\n    """\n\n'
             case "number":
                 ret += f"    {property_name}: Decimal\n"
                 ret += '    """' + _property["description"] + "\n"
