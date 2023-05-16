@@ -1,10 +1,18 @@
 from typing import Dict, TypedDict
 
-Property = TypedDict('Property', {
-    "title": str,
-    "type": str,
-    "description": str
-})
+class ItemsDict(TypedDict):
+    "$ref": str
+
+class PropertyOptional(TypedDict, total=False):
+    items: ItemsDict    
+
+class PropertyRequired(TypedDict):
+    title: str
+    type: str
+    description: str
+    
+class Property(PropertyRequired, PropertyOptional):
+    pass
 
 Schema = TypedDict('Schema', {
     "title": str,

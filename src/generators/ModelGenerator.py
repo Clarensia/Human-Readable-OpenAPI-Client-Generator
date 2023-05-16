@@ -1,6 +1,7 @@
+import json
 import os
 
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from src.generators.generator_types import Property, Schema
 
@@ -165,6 +166,35 @@ class {model_name}:
 '''
         return ret
 
+    def _get_array_type(self, _property: Property) -> str:
+        """For a given property of type "array", it will give the type of the array.
+        
+        A property of type "array" will usually look like this:
+        {
+            title: "Data",
+            type: "array",
+            items: {
+                "$ref": "#/components/schemas/Exchange"
+            },
+            description: "The list of exchanges"
+        }
+        
+        To get the type of the array, we go to _property["items"]["$ref"] and take
+        the word after the last "/", here, it will be "Exchange"
+
+        :param _property: The property that has the array type. (We must _property because
+                          property is a reserved keyword in Python)
+        :type _property: Property
+        :return: The name of the type of the array
+        :rtype: str
+        """
+        if _property["type"] != "array":
+            raise Exception("ModelGenerator: _get_array_type: Called _get_array_type with a type that is not \"array\":", _property["type"])
+        ref = _property["type"]["$ref"]
+        # We must put lower, because
+        return ref.split("/")[-1]
+        
+
     def _add_property(self, property_name: str, _property: Property, example: Any) -> str:
         ret = ""
         match _property["type"]:
@@ -179,7 +209,12 @@ class {model_name}:
                 ret += f'\n    Example: {example}\n'
                 ret += '    """\n\n'
             case "array":
-                ret += f"    {property_name}: List[]"
+                array_type = self._get_array_type(_property)
+                ret += f"    {property_name}: List[" + array_type + "]\n"
+                ret += '     """' + _property["description"] + "\n"
+                ret += "\n    Example:\n"
+                ret += json.dumps(example, indent=4)
+                ret += '    """\n\n'
             case _:
                 raise Exception(f'The generator does not support the type {_property["type"]} please open an issue on: https://github.com/Clarensia/Human-Readable-OpenAPI-Client-Generator/issues')
         return ret
@@ -190,7 +225,10 @@ class {model_name}:
             case "string":
                 ret += f'        :type {property_name}: str'
             case "integer":
-                ret += f'        :type {property_name}: str'
+                ret += f'        :type {property_name}: int'
+            case "array":
+                array_type = self._get_array_type(_property)
+                ret += f'        :type {property_name}: List[{array_type}]'
         return ret
 
     def _add_constructor(self, schema_name: str, schema: Schema) -> str:
