@@ -151,6 +151,13 @@ class ModelGenerator:
 
         return False
 
+    def _has_decimals(self, properties: Dict[str, Property]) -> str:
+        for property_name in properties:
+            if properties[property_name]["type"] == "number":
+                return True
+
+        return False
+
     def _get_array_type(self, _property: Property) -> str:
         """For a given property of type "array", it will give the type of the array.
         
@@ -195,13 +202,38 @@ class ModelGenerator:
                 ret.append(self._get_array_type(_property))
         return ret
 
-    def _add_first_lines(self, model_name: str, properties: Dict[str, Property]) -> str:
-        ret = "from dataclasses import dataclass\n"
+    def _add_special_imports(self, properties: Dict[str, Property]) -> str:
+        """Some fields require some special imports:
+        List
+        Decimals
+        Other models
+        
+        This method allow us to detect which imports are required and add
+        them.
+        
+        For example, if we detect a "number" type in one of the properties fields,
+        we add: from decimal import Decimal
+        
+        We use "Decimal" for the number type because it is more precise.
+
+        :param properties: The properties that we have for the program
+        :type properties: Dict[str, Property]
+        :return: Some added imports when necessary
+        :rtype: str
+        """
+        ret = ""
+        if self._has_decimals(properties):
+            ret += "from decimal import Decimal\n"
         if self._has_array(properties):
             array_types = self._get_array_types(properties)
             ret += "from typing import List\n"
             for array_type in array_types:
                 ret += f"from Models.{array_type} import {array_type}\n"
+        return ret
+
+    def _add_first_lines(self, model_name: str, properties: Dict[str, Property]) -> str:
+        ret = "from dataclasses import dataclass\n"
+        ret += self._add_special_imports(properties)
         ret += f'''
 
 
