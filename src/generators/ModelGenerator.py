@@ -151,21 +151,6 @@ class ModelGenerator:
 
         return False
 
-    def _add_first_lines(self, model_name: str, properties: Dict[str, Property]) -> str:
-        ret = ""
-        if self._has_array(properties):
-            ret += "from typing import List\n"
-        ret += f'''
-from dataclasses import dataclass
-
-
-@dataclass(slots=True, frozen=True)
-class {model_name}:
-    """The {model_name} model"""
-
-'''
-        return ret
-
     def _get_array_type(self, _property: Property) -> str:
         """For a given property of type "array", it will give the type of the array.
         
@@ -191,8 +176,41 @@ class {model_name}:
         if _property["type"] != "array":
             raise Exception("ModelGenerator: _get_array_type: Called _get_array_type with a type that is not \"array\":", _property["type"])
         ref = _property["type"]["$ref"]
-        # We must put lower, because
         return ref.split("/")[-1]
+
+    def _get_array_types(self, properties: Dict[str, Property]) -> List[str]:
+        """For a dictionary of properties, it will get all the types of the arrays.
+        
+        This is required for the dataclass, because if a dataclass has a list, we must import
+        the type of the list
+
+        :param properties: The dictionary containing as key the name of the property and as
+                           value the Property object.
+        :type properties: Dict[str, Property]
+        """
+        ret = []
+        for property_name in properties:
+            _property = properties[property_name]
+            if _property["type"] == "array":
+                ret.append(self._get_array_type(_property))
+        return ret
+
+    def _add_first_lines(self, model_name: str, properties: Dict[str, Property]) -> str:
+        ret = "from dataclasses import dataclass\n"
+        if self._has_array(properties):
+            array_types = self._get_array_types(properties)
+            ret += "from typing import List\n"
+            for array_type in array_types:
+                ret += f"from Models.{array_type} import {array_type}\n"
+        ret += f'''
+
+
+@dataclass(slots=True, frozen=True)
+class {model_name}:
+    """The {model_name} model"""
+
+'''
+        return ret
         
 
     def _add_property(self, property_name: str, _property: Property, example: Any) -> str:
