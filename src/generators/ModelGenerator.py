@@ -308,7 +308,7 @@ class {model_name}:
                     ret += f': Decimal'
                 case _:
                     raise Exception(f'The generator does not support the type {schema["properties"][property_name]["type"]} please open an issue on: https://github.com/Clarensia/Human-Readable-OpenAPI-Client-Generator/issues')
-        ret += "):\n"
+        ret += "**_):\n"
         ret += f'        """Instantiate an {schema_name} model\n\n'
         for property_name in schema["properties"]:
             ret += self._create_constructor_doc_field(property_name, schema["properties"][property_name])
