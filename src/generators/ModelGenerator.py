@@ -228,7 +228,7 @@ class ModelGenerator:
             array_types = self._get_array_types(properties)
             ret += "from typing import List\n"
             for array_type in array_types:
-                ret += f"from Models.{array_type} import {array_type}\n"
+                ret += f"from models.{array_type} import {array_type}\n"
         return ret
 
     def _add_first_lines(self, model_name: str, properties: Dict[str, Property]) -> str:
