@@ -250,7 +250,7 @@ class {model_name}:
         match _property["type"]:
             case "string":
                ret += f"    {property_name}: str\n"
-               ret += '     """' + _property["description"] + "\n"
+               ret += '    """' + _property["description"] + "\n"
                ret += f'\n    Example: "{example}"\n'
                ret += '    """\n\n'
             case "integer":
@@ -261,7 +261,7 @@ class {model_name}:
             case "array":
                 array_type = self._get_array_type(_property)
                 ret += f"    {property_name}: List[" + array_type + "]\n"
-                ret += '     """' + _property["description"] + "\n"
+                ret += '    """' + _property["description"] + "\n"
                 ret += "\n    Example:\n"
                 ret += json.dumps(example, indent=4)
                 ret += '    """\n\n'
