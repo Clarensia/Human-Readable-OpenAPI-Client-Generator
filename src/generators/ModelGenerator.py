@@ -265,6 +265,11 @@ class {model_name}:
                 ret += "\n    Example:\n"
                 ret += json.dumps(example, indent=4)
                 ret += '    """\n\n'
+            case "number":
+                ret += f"    {property_name}: Decimal\n"
+                ret += '    """' + _property["description"] + "\n"
+                ret += f'\n    Example: Decimal({example})\n'
+                ret += '    """\n\n'
             case _:
                 raise Exception(f'The generator does not support the type {_property["type"]} please open an issue on: https://github.com/Clarensia/Human-Readable-OpenAPI-Client-Generator/issues')
         return ret
@@ -279,6 +284,8 @@ class {model_name}:
             case "array":
                 array_type = self._get_array_type(_property)
                 ret += f'        :type {property_name}: List[{array_type}]'
+            case "number":
+                ret += f'        :type {property_name}: Decimal'
             case _:
                 raise Exception(f'The generator does not support the type {_property["type"]} please open an issue on: https://github.com/Clarensia/Human-Readable-OpenAPI-Client-Generator/issues')
         return ret
@@ -297,6 +304,8 @@ class {model_name}:
                 case "array":
                     array_type = self._get_array_type(schema["properties"][property_name])
                     ret += f": List[{array_type}]"
+                case "number":
+                    ret += f': Decimal'
                 case _:
                     raise Exception(f'The generator does not support the type {schema["properties"][property_name]["type"]} please open an issue on: https://github.com/Clarensia/Human-Readable-OpenAPI-Client-Generator/issues')
         ret += ":\n"
