@@ -247,6 +247,8 @@ class {model_name}:
             case "array":
                 array_type = self._get_array_type(_property)
                 ret += f'        :type {property_name}: List[{array_type}]'
+            case _:
+                raise Exception(f'The generator does not support the type {_property["type"]} please open an issue on: https://github.com/Clarensia/Human-Readable-OpenAPI-Client-Generator/issues')
         return ret
 
     def _add_constructor(self, schema_name: str, schema: Schema) -> str:
@@ -260,6 +262,11 @@ class {model_name}:
                     ret += ": str"
                 case "integer":
                     ret += ": int"
+                case "array":
+                    array_type = self._get_array_type(schema["properties"][property_name])
+                    ret += f": List[{array_type}]"
+                case _:
+                    raise Exception(f'The generator does not support the type {schema["properties"][property_name]["type"]} please open an issue on: https://github.com/Clarensia/Human-Readable-OpenAPI-Client-Generator/issues')
         ret += ":\n"
         ret += f'        """Instantiate an {schema_name} model\n\n'
         for property_name in schema["properties"]:
