@@ -17,6 +17,7 @@ class ModelGenerator:
     
     Here is an example of input and ouput for a schema:
     Input schema:
+    ```json
     "AmountIn": {
         "title": "AmountIn",
         "type": "object",
@@ -61,6 +62,7 @@ class ModelGenerator:
             "amountOut": 10000
         }
     }
+    ```
     
     Here is the resulting file:
     ```python
