@@ -80,6 +80,21 @@ class MainClassGenerator:
             """
             await self._session.close()
 
+        async def _do_request(self, path: str, params: Dict[str, Any] | None = None) -> Dict[str, None]:
+            """Make raw API requests (that return the json result).
+            
+            This method additionaly adds the user API key to the request if it is present.
+
+            :param path: The path to the request
+            :type path: str
+            :param params: The optional query parameters of the request, defaults to None
+            :type params: Dict[str, Any] | None, optional
+            :return: The json-formated result
+            :rtype: Dict[str, None]
+            """
+            async with self._session.get(path, params=params, headers=self._headers) as response:
+                return await response.json()
+
     ```
     
     The TitleClass will come from the config.yml file that will be parsed.
@@ -92,6 +107,123 @@ class MainClassGenerator:
     from the "paths" key from open API.
     
     For example:
+    ```json
+    "/v0/exchanges/": {
+        "get": {
+            "tags": [
+                "exchanges"
+            ],
+            "summary": "Get the list of supported exchanges by the API",
+            "operationId": "exchanges_v0_exchanges__get",
+            "parameters": [
+                {
+                    "description": "You can ignore this value for this version of the API.",
+                    "required": false,
+                    "schema": {
+                        "title": "Page",
+                        "type": "integer",
+                        "description": "You can ignore this value for this version of the API.",
+                        "default": 1
+                    },
+                    "name": "page",
+                    "in": "query"
+                },
+                {
+                    "description": "The blockchain from which you want to get the exchanges",
+                    "required": false,
+                    "schema": {
+                        "title": "Blockchain",
+                        "type": "string",
+                        "description": "The blockchain from which you want to get the exchanges"
+                    },
+                    "name": "blockchain",
+                    "in": "query"
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "The list of all supported exchange of the API.\n\nYou can use the exchange id responded from this for other API calls.\n",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Exchanges"
+                            }
+                        }
+                    }
+                },
+                "422": {
+                    "description": "Validation Error",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/HTTPValidationError"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    ```
+    Will generate the following method:
+    ```python
+    async def exchanges(self, page: int = 1, blockchain: str | None = None) -> Exchanges:
+    """Get the list of supported exchanges by the API
+
+    :param page: You can ignore this value for the current version of the API
+    :type page: int, optional
+    :param blockchain: The blockchain from which you want to get the exchanges
+    :type blockchain: str | None, optional
+    :return: The list of all supported exchanges of the API.
     
+    You can use the exchange id responded from this for other API calls.
     
+    Example response:
+    Exchanges(
+        page=1,
+        total_pages=1,
+        data=[
+            Exchange(
+                exchange="lydia_finance_avalanche",
+                blockchain="avalanche",
+                name="Lydia Finance",
+                url="https://exchange.lydia.finance/#/swap",
+                fee=200
+            ),
+            Exchange(
+                exchange="oliveswap_avalanche",
+                blockchain="avalanche",
+                name="Oliveswap",
+                url="https://avax.olive.cash/",
+                fee=250
+            )
+        ]
+    )
+    :rtype: Exchanges
+    """
+    params = {
+        "page": page
+    }
+    if blockchain is not None:
+        params["blockchain"] = blockchain
+    
+    ret = await self._do_request("/v0/exchanges", params)
+    print(ret)
+    return Exchanges(
+        page=ret["page"],
+        total_pages=ret["total_pages"],
+        data=[
+            Exchange(
+                d["exchange"],
+                d["blockchain"],
+                d["name"],
+                d["url"],
+                d["fee"]
+            )
+            for d in ret["data"]
+        ]
+    )
+    ```
+    We have to manually put each fields, this way, if the class returns additional fields
+    we will not have an error
     '''
