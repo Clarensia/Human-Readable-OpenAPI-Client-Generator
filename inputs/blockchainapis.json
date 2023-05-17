@@ -3,7 +3,7 @@
     "info": {
         "title": "High-frequency DEX API",
         "description": "\nOur API empowers you to access live financial data across multiple blockchains (currently supporting 6, with more on the way) with unparalleled speed and efficiency.\n\nWhat sets our API apart? We've optimized performance to deliver an impressive 1000+ calls per second per user, with a lightning-fast processing time of less than 2 millisecond per request. Compare that to other solutions with a 20-millisecond processing time and fewer requests per second, and it's clear why developers choose our API for their trading bots.\n\nAnother game-changing feature is our seamless integration across various blockchains and protocols. With our API, you can reuse the same code without changing a single line, simplifying the development process and saving you valuable time.\n\nReady to try it out? [Sign up for a free API key here](http://dashboard.blockchainapis.io) or start exploring the possibilities on this page. Need support or have questions? Join our [Discord community](https://discord.gg/GphRMJXmS5) where our team and fellow developers are eager to help you make the most of our powerful API.\n",
-        "version": "0.2.0"
+        "version": "0.2.1"
     },
     "paths": {
         "/v0/blockchains/": {
@@ -15,7 +15,7 @@
                 "operationId": "blockchains_v0_blockchains__get",
                 "responses": {
                     "200": {
-                        "description": "Successful Response",
+                        "description": "The list of the blockchains supported by the API.\n\nUsing this method, you can find the id of the blockchain that you can use for\nother function calls.\n",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -65,7 +65,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful Response",
+                        "description": "The list of all supported exchange of the API.\n\nYou can use the exchange id responded from this for other API calls.\n",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -110,7 +110,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful Response",
+                        "description": "Information on a specific exchange.\n\nThese informations includes:\n- The blockchain id of the exchange\n- The id of the exchange\n- The name of the exchange\n- The url to access the exchange\n",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -179,7 +179,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful Response",
+                        "description": "The list of pairs supported by the API. It returns token addresses,\nblockchain, exchange and the fee that the pair has.\n\nThe fee may vary depending on the exchange used.\n",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -262,7 +262,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "The list of all of the reserve for the given pair, blockchain and exchange. Can return an empty list if the given pair was not found.\nThis method does not return the reserves of UniswapV3 pairs because these pairs are not balanced.",
+                        "description": "The list of all of the reserve for the given pair, blockchain and exchange.\nCan return an empty list if the given pair was not found.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -577,7 +577,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful Response",
+                        "description": "Informations on a specific token.\n\nThis information includes:\n- The id of the blockchain that this token is\n- The address of the token\n- The decimals of it\n- The market cap\n",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -635,7 +635,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful Response",
+                        "description": "The decimals of the specific token",
                         "content": {
                             "application/json": {
                                 "schema": {
