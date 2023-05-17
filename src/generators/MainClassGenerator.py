@@ -1,3 +1,7 @@
+from typing import Dict
+from src.generators.generator_types import OpenAPI, OpenAPIPath
+
+
 class MainClassGenerator:
     '''Generates the class that the users will instantiate to interact
     with the API.
@@ -230,6 +234,10 @@ class MainClassGenerator:
 
     def __init__(self):
         pass
-    
-    def generate_main_class(self):
+
+    def _add_necessary_imports(self, paths: Dict[str, OpenAPIPath]):
         pass
+
+    def generate_main_class(self, open_api_file: OpenAPI):
+        main_class_text = ""
+        
