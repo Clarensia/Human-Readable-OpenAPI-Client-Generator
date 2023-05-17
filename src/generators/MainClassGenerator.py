@@ -84,9 +84,14 @@ class MainClassGenerator:
     
     The TitleClass will come from the config.yml file that will be parsed.
     As well as the api key settings.
+    The url: "https://api.blockchainapis.io" is also set inside of config.yml
     Please note that on top of the file will be added all imports for all
     of the models that are required for the API to work.
     
     Once we have generated the base above, we will generate all of the methods
-    from 
+    from the "paths" key from open API.
+    
+    For example:
+    
+    
     '''
