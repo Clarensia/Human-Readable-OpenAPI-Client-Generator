@@ -227,3 +227,9 @@ class MainClassGenerator:
     We have to manually put each fields, this way, if the class returns additional fields
     we will not have an error
     '''
+
+    def __init__(self):
+        pass
+    
+    def generate_main_class(self):
+        pass

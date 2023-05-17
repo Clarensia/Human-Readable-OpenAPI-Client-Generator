@@ -4,6 +4,7 @@ import sys
 
 from argparse import Namespace
 from typing import Dict
+from src.generators.MainClassGenerator import MainClassGenerator
 from src.generators.ModelGenerator import ModelGenerator
 
 from src.generators.generator_types import Schema
@@ -17,12 +18,33 @@ class ClientGenerator:
         _dest_folder: The destination folder of the generated client
     """
     
+    _open_api_file_path: str
+    """The path to the targeted open API file. This file has to be valid, otherwise,
+    the program will print an error
+    """
+    
+    _dest_folder: str
+    """The path to the destination folder"""
+    
+    _models_folder: str
+    """The path to the folder that will contain the resulting models"""
+    
+    _exceptions_folder: str
+    """The path to the folder that will contain the exceptions"""
+    
+    _main_class_generator: MainClassGenerator
+    """The class that allow us to generate the main class"""
+    
+    _model_generator: ModelGenerator
+    """The class that allow us to generate the models"""
+    
     def __init__(self, arguments: Namespace):
         self._verify_args(arguments)
         self._open_api_file_path = arguments.file
         self._dest_folder = arguments.dest
         self._models_folder = os.path.join(self._dest_folder, "models")
         self._exceptions_folder = os.path.join(self._dest_folder, "exceptions")
+        self._main_class_generator = MainClassGenerator()
         self._model_generator = ModelGenerator(self._models_folder, self._exceptions_folder)
 
     def _verify_args(self, arguments: Namespace):
@@ -72,5 +94,6 @@ class ClientGenerator:
         with open(self._open_api_file_path, "r") as f:
             open_api_file = json.load(f)
         self._init_dest_folder()
+        self._main_class_generator.generate_main_class()
         schemas: Dict[str, Schema] = open_api_file["components"]["schemas"]
         self._model_generator.build_models(schemas)
