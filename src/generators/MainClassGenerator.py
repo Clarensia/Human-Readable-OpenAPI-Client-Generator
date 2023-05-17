@@ -1,5 +1,5 @@
-from typing import Dict
-from src.generators.generator_types import OpenAPI, OpenAPIPath
+from typing import Dict, List
+from src.generators.generator_types import Info, OpenAPI, OpenAPIPath
 
 
 class MainClassGenerator:
@@ -232,8 +232,8 @@ class MainClassGenerator:
     we will not have an error
     '''
 
-    def __init__(self):
-        pass
+    def __init__(self, class_name: str):
+        self._class_name = class_name
 
     def _has_list(self, paths: Dict[str, OpenAPIPath]) -> bool:
         for path in paths:
@@ -243,14 +243,40 @@ class MainClassGenerator:
             
         return False
 
-    def _add_necessary_imports(self, paths: Dict[str, OpenAPIPath]):
+    def _get_models_to_import(self, paths: Dict[str, OpenAPIPath]) -> List[str]:
+        ret = []
+        for path in paths:
+            returned_schema = paths[path]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
+            if "items" in returned_schema:
+                ret.append(returned_schema["items"]["$ref"].split("/")[-1])
+            elif "$ref" in returned_schema:
+                ret.append(returned_schema["$ref"].split("/")[-1])
+            else:
+                raise Exception(f"Not 'item' nor '$ref' in current returned schema: {returned_schema}")
+        return ret                
+
+    def _add_necessary_imports(self, paths: Dict[str, OpenAPIPath]) -> str:
         ret = ""
         if self._has_list(paths):
             ret += "from typing import Any, Dict, List\n"
         else:
             ret += "from typing import Any, Dict\n"
-        
+        ret += "\nfrom aiohttp import ClientSession\n\n"
+
+        models_to_import = self._get_models_to_import(paths)
+        for model in models_to_import:
+            ret += f"from models.{model} import {model}\n"
+
+        return ret
+
+    def _add_class_begining(self, infos: Info) -> str:
+        ret = f'''class {self._class_name}:
+
+    
+'''
 
     def generate_main_class(self, open_api_file: OpenAPI):
         main_class_text = ""
         main_class_text += self._add_necessary_imports(open_api_file["paths"])
+        main_class_text += "\n\n"
+        

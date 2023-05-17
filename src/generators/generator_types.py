@@ -13,7 +13,7 @@ ItemsDict = TypedDict('ItemsDict', {
 AdvancedItemDict = TypedDict("AdvancedItemDict", {
     "title": str,
     "type": str,
-    "itmes": ItemsDict
+    "items": ItemsDict
 })
 
 ApplicationJson = TypedDict("ApplicationJson", {
