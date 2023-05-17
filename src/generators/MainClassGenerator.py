@@ -235,9 +235,22 @@ class MainClassGenerator:
     def __init__(self):
         pass
 
+    def _has_list(self, paths: Dict[str, OpenAPIPath]) -> bool:
+        for path in paths:
+            returned_schema = paths[path]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
+            if "type" in returned_schema and returned_schema["type"] == "array":
+                return True
+            
+        return False
+
     def _add_necessary_imports(self, paths: Dict[str, OpenAPIPath]):
-        pass
+        ret = ""
+        if self._has_list(paths):
+            ret += "from typing import Any, Dict, List\n"
+        else:
+            ret += "from typing import Any, Dict\n"
+        
 
     def generate_main_class(self, open_api_file: OpenAPI):
         main_class_text = ""
-        
+        main_class_text += self._add_necessary_imports(open_api_file["paths"])
