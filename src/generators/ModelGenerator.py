@@ -104,28 +104,6 @@ class ModelGenerator:
         example: 10000
         """
 
-        def __init__(self, blockchain: str, exchange: str, tokenIn: str, tokenOut: str, amountIn: str, amountOut: str, **_):
-            """Instantiate an AmountIn model
-
-            :param blockchain: The id of blockchain on which the exchange is taking place
-            :type blockchain: str
-            :param exchange: The id of the exchange used for this trade
-            :type exchange: str
-            :param tokenIn: The address of the token that you sell
-            :type tokenIn: str
-            :param tokenOut: The address of the token that you buy
-            :type tokenOut: str
-            :param amountIn: The amount of tokenIn that you have to sell in order to get amountOut tokenOut
-            :type amountIn: str
-            :param amountOut: The amount of tokenOut that you wish to buy
-            :type amountOut: str
-            """
-            self.blockchain = blockchain
-            self.exchange = exchange
-            self.tokenIn = tokenIn
-            self.tokenOut = tokenOut
-            self.amountIn = amountIn
-            self.amountOut = amountOut
     ```
     
     We create a custom constructor, because the API might be updated and return more fields. If the API got an update
@@ -293,49 +271,6 @@ class {model_name}:
                 raise Exception(f'The generator does not support the type {_property["type"]} please open an issue on: https://github.com/Clarensia/Human-Readable-OpenAPI-Client-Generator/issues')
         return ret
 
-    def _create_constructor_doc_field(self, property_name: str, _property: Property):
-        ret = f'        :param {property_name}: {_property["description"]}\n'
-        match _property["type"]:
-            case "string":
-                ret += f'        :type {property_name}: str\n'
-            case "integer":
-                ret += f'        :type {property_name}: int\n'
-            case "array":
-                array_type = self._get_array_type(_property)
-                ret += f'        :type {property_name}: List[{array_type}]\n'
-            case "number":
-                ret += f'        :type {property_name}: Decimal\n'
-            case _:
-                raise Exception(f'The generator does not support the type {_property["type"]} please open an issue on: https://github.com/Clarensia/Human-Readable-OpenAPI-Client-Generator/issues')
-        return ret
-
-    def _add_constructor(self, schema_name: str, schema: Schema) -> str:
-        ret = ""
-        ret += "    def __init__(self"
-        for property_name in schema["properties"]:
-            ret += ", "
-            ret += property_name
-            match schema["properties"][property_name]["type"]:
-                case "string":
-                    ret += ": str"
-                case "integer":
-                    ret += ": int"
-                case "array":
-                    array_type = self._get_array_type(schema["properties"][property_name])
-                    ret += f": List[{array_type}]"
-                case "number":
-                    ret += f': Decimal'
-                case _:
-                    raise Exception(f'The generator does not support the type {schema["properties"][property_name]["type"]} please open an issue on: https://github.com/Clarensia/Human-Readable-OpenAPI-Client-Generator/issues')
-        ret += ", **_):\n"
-        ret += f'        """Instantiate an {schema_name} model\n\n'
-        for property_name in schema["properties"]:
-            ret += self._create_constructor_doc_field(property_name, schema["properties"][property_name])
-        ret += '        """\n'
-        for property_name in schema["properties"]:
-            ret += f'        self.{property_name} = {property_name}\n'
-        return ret
-
     def _write_model(self, model_name: str, model_text: str):
         with open(os.path.join(self._models_path, model_name + ".py"), "w+") as f:
             f.write(model_text)
@@ -359,5 +294,4 @@ class {model_name}:
             for property_name in schema["properties"]:
                 _property = schema["properties"][property_name]
                 to_write += self._add_property(property_name, _property, schema["example"][property_name])
-            to_write += self._add_constructor(schema_name, schema)
             self._write_model(schema_name, to_write)
