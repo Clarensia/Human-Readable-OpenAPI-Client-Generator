@@ -1,5 +1,6 @@
+import os
 from typing import Dict, List
-from src.generators.generator_types import Info, OpenAPI, OpenAPIPath
+from src.generators.generator_types import Info, OpenAPI, OpenAPIPath, Schema
 
 
 class MainClassGenerator:
@@ -232,9 +233,10 @@ class MainClassGenerator:
     we will not have an error
     '''
 
-    def __init__(self, class_name: str, api_url: str):
+    def __init__(self, class_name: str, api_url: str, result_folder: str):
         self._class_name = class_name
         self._api_url = api_url
+        self._result_folder = result_folder
 
     def _has_list(self, paths: Dict[str, OpenAPIPath]) -> bool:
         for path in paths:
@@ -337,11 +339,21 @@ class MainClassGenerator:
                 return await response.json()
 '''
 
+    def _add_method(self, path: OpenAPIPath, schema: Dict[str, Schema]) -> str:
+        pass
+
+    def _write_main_class(self, to_write: str):
+        with open(os.path.join(self._result_folder, f"{self._class_name}.py"), "w+") as f:
+            f.write(to_write)
+
     def generate_main_class(self, open_api_file: OpenAPI):
         main_class_text = ""
         main_class_text += self._add_necessary_imports(open_api_file["paths"])
         main_class_text += "\n\n"
         main_class_text += self._add_class_begining(open_api_file["info"])
         main_class_text += "\n"
+        for path in open_api_file["paths"]:
+            main_class_text += self._add_method(open_api_file["paths"][path], open_api_file["components"]["schemas"])
+            main_class_text += "\n"
         
-        
+        self._write_main_class(main_class_text)
