@@ -232,8 +232,9 @@ class MainClassGenerator:
     we will not have an error
     '''
 
-    def __init__(self, class_name: str):
+    def __init__(self, class_name: str, api_url: str):
         self._class_name = class_name
+        self._api_url = api_url
 
     def _has_list(self, paths: Dict[str, OpenAPIPath]) -> bool:
         for path in paths:
@@ -270,13 +271,77 @@ class MainClassGenerator:
         return ret
 
     def _add_class_begining(self, infos: Info) -> str:
-        ret = f'''class {self._class_name}:
+        return f'''class {self._class_name}:
+        """{infos["title"]}
 
-    
+        {infos["description"]}
+        """
+        
+        _api_key: str | None = None
+        """Your API key.
+        
+        This SDK will work without an API key, but we advise you to provide one in order to
+        unlock better performance.
+        
+        You can get your API key for free on this link: https://dashboard.blockchainapis.io
+        """
+        _session: ClientSession
+        """The session that is used by async operation.
+        
+        This session must be closed at the end of your program or usage of the API.
+        
+        It can be closed with:
+        await blockchain_apis_instance.close()
+        
+        (replace blockchain_apis_instance with your instance of BlockchainAPIs)
+        """
+        
+        def __init__(self, api_key: str | None = None):
+            """Creates a {self._class_name} sync instance that allow you to make API calls.
+
+            The client works without an API key, but for better performance, we advise you
+            to get one at: https://dashboard.blockchainapis.io
+
+            :param api_key: Your API key, defaults to None
+            :type api_key: str | None, optional
+            """
+            self._api_key = api_key
+            self._headers = {
+                "accept": "application/json"
+            }
+            if self._api_key is not None:
+                self._headers["api-key"] = self._api_key
+            self._session = ClientSession({self._api_url})
+
+        async def close(self):
+            """Close the async session object.
+            
+            You must call this method at the end of your program or when you have finished
+            working with BlockchainAPIs.
+            """
+            await self._session.close()
+
+        async def _do_request(self, path: str, params: Dict[str, Any] | None = None) -> Dict[str, None]:
+            """Make raw API requests (that return the json result).
+            
+            This method additionaly adds the user API key to the request if it is present.
+
+            :param path: The path to the request
+            :type path: str
+            :param params: The optional query parameters of the request, defaults to None
+            :type params: Dict[str, Any] | None, optional
+            :return: The json-formated result
+            :rtype: Dict[str, None]
+            """
+            async with self._session.get(path, params=params, headers=self._headers) as response:
+                return await response.json()
 '''
 
     def generate_main_class(self, open_api_file: OpenAPI):
         main_class_text = ""
         main_class_text += self._add_necessary_imports(open_api_file["paths"])
         main_class_text += "\n\n"
+        main_class_text += self._add_class_begining(open_api_file["info"])
+        main_class_text += "\n"
+        
         
