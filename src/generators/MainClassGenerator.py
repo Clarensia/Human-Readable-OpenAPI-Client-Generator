@@ -1,6 +1,6 @@
 import os
 from typing import Dict, List
-from src.generators.generator_types import Info, OpenAPI, OpenAPIPath, Schema
+from src.generators.generator_types import Get, Info, OpenAPI, OpenAPIPath, Schema
 
 
 class MainClassGenerator:
@@ -339,8 +339,53 @@ class MainClassGenerator:
                 return await response.json()
 '''
 
-    def _add_method(self, path: OpenAPIPath, schema: Dict[str, Schema]) -> str:
+    def _get_method_name(self, path: str) -> str:
+        splited = path.split('/')
+        if splited[-1] == "":
+            return splited[-2]
+        else:
+            return splited[-1]
+
+    def _get_func_params(self, get: Get) -> str:
+        ret = ""
+        if "parameters" in get:
+            pass
+        
+        return ret
+
+    def _get_func_param_desc(self, get: Get) -> str:
+        return ""
+
+    def _get_func_example_response(self, get: Get, schema: Dict[str, Schema]) -> str:
         pass
+
+    def _get_response_type(self, get: Get) -> str:
+        pass
+
+    def _get_function_description(self, get: Get, schema: Dict[str, Schema]) -> str:
+        ret = ""
+        ret += f'        """{get["summary"]}\n\n'
+        ret += self._get_func_param_desc(get)
+        ret += f'        :return: {get["responses"][200]["description"]}\n'
+        ret += "\n        Example response:\n"
+        ret += self._get_func_example_response(get, schema)
+        ret += "\n"
+        ret += f"        :rtype: {self._get_response_type(get)}\n"
+        ret += '        """\n'
+        return ret
+
+    def _get_function_implementation(self, path: str, get: Get, schema: Dict[str, Schema]) -> str:
+        ret = f'        ret = await self._do_request({path})\n'
+        
+        return ret
+
+    def _add_method(self, path: str, path_object: OpenAPIPath, schema: Dict[str, Schema]) -> str:
+        get = path_object["get"]
+        method_name = self._get_method_name(path)
+        ret = f"async def {method_name}(self{self._get_func_params(get)}):\n"
+        ret += self._get_function_description(get, schema)
+        ret += self._get_function_implementation(path, get, schema)
+        return ret
 
     def _write_main_class(self, to_write: str):
         with open(os.path.join(self._result_folder, f"{self._class_name}.py"), "w+") as f:
@@ -353,7 +398,7 @@ class MainClassGenerator:
         main_class_text += self._add_class_begining(open_api_file["info"])
         main_class_text += "\n"
         for path in open_api_file["paths"]:
-            main_class_text += self._add_method(open_api_file["paths"][path], open_api_file["components"]["schemas"])
+            main_class_text += self._add_method(path, open_api_file["paths"][path], open_api_file["components"]["schemas"])
             main_class_text += "\n"
         
         self._write_main_class(main_class_text)
