@@ -374,9 +374,12 @@ class MainClassGenerator:
         ret += '        """\n'
         return ret
 
+    def _build_returned_value(self, get: Get, schema: Dict[str, Schema]) -> str:
+        pass
+
     def _get_function_implementation(self, path: str, get: Get, schema: Dict[str, Schema]) -> str:
         ret = f'        ret = await self._do_request({path})\n'
-        
+        ret += self._build_returned_value(get, schema)
         return ret
 
     def _add_method(self, path: str, path_object: OpenAPIPath, schema: Dict[str, Schema]) -> str:
