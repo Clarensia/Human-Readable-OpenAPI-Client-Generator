@@ -1,8 +1,8 @@
 import json
 import os
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
-from src.utils import convert_type
+from src.utils import convert_type, extract_schema_name_from_ref
 from src.generators.generator_types import FuncParam, Get, Info, OpenAPI, OpenAPIPath, Schema
 
 
@@ -404,10 +404,23 @@ class MainClassGenerator:
 
         return ret
 
-    def _get_schema_name(self, get: Get) -> str:
-        pass
+    def _get_schema_name(self, get: Get) -> Tuple[str, bool]:
+        """Get the name of the schema.
+        
+        If the schema is a list, it also returns True in secondary, False otherwise
 
-    def _format_example(self, schema: Schema, indent: int = 8) -> str:
+        :param get: The get object from the path
+        :type get: Get
+        :return: At first the name of the schema and as second if it is an array or not
+        :rtype: Tuple[str, bool]
+        """
+        schema = get["responses"][200]["content"]["application/json"]["schema"]
+        if "$ref" in schema:
+            return extract_schema_name_from_ref(schema["$ref"]), False
+        else:
+            return extract_schema_name_from_ref(schema["items"]["$ref"]), True
+
+    def _format_example(self, schema: Schema, indent: int) -> str:
         """Format the given schema example
         
         For example:
@@ -448,11 +461,18 @@ class MainClassGenerator:
         return f'{indent}```json\n{space_added}\n```\n'
 
     def _get_func_example_response(self, get: Get, schema: Dict[str, Schema]) -> str:
-        schema_name = self._get_schema_name(get)
-        return self._format_example(schema[schema_name])
+        schema_name, is_array = self._get_schema_name(get)
+        if is_array:
+            return f'        ```json\n        [\n{self._format_example(schema[schema_name], 12)}\n        ]\n```'
+        else:
+            return f'        ```json\n{self._format_example(schema[schema_name], 8)}\n        ```'
 
     def _get_response_type(self, get: Get) -> str:
-        pass
+        schema_name, is_array = self._get_schema_name(get)
+        if is_array:
+            return f"List[{schema_name}]"
+        else:
+            return schema_name
 
     def _get_function_description(self, get: Get, schema: Dict[str, Schema]) -> str:
         ret = ""
