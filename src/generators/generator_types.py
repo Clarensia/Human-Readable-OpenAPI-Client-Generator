@@ -29,10 +29,26 @@ Response = TypedDict("Response", {
     "content": Content
 })
 
+FuncSchema = TypedDict("FuncSchema", {
+    "title": str,
+    "type": str,
+    "description": str,
+    "default": str | int
+})
+
+FuncParam = TypedDict("FuncParam", {
+    "description": str,
+    "required": bool,
+    "schema": FuncSchema,
+    "name": str,
+    "in": str
+})
+
 Get = TypedDict("Get", {
     "tags": List[str],
     "summary": str,
     "operationId": str,
+    "parameters": List[FuncParam],
     "responses": Dict[str, Response]
 })
 

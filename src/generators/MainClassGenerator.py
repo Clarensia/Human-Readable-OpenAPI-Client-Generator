@@ -1,6 +1,8 @@
 import os
 from typing import Dict, List
-from src.generators.generator_types import Get, Info, OpenAPI, OpenAPIPath, Schema
+
+from src.utils import convert_type
+from src.generators.generator_types import FuncParam, Get, Info, OpenAPI, OpenAPIPath, Schema
 
 
 class MainClassGenerator:
@@ -346,11 +348,42 @@ class MainClassGenerator:
         else:
             return splited[-1]
 
+    def _get_func_param_with_default(self, param: FuncParam) -> str:
+        """Get the function parameters with the default value
+        
+        The default value, depend of the schema. If the schema contains
+        a default value, we will add " = {default_value}"
+        
+        If the schema does not contain any default value, we will add:
+        " | None = None"
+        The None is to make the value optional
+
+        :param param: The parameter that we have to get the values
+        :type param: FuncParam
+        :return: The parameter with the default value set
+        :rtype: str
+        """
+        func_schema = param['schema']
+        ret = f"{param['name']}: {func_schema['type']}"
+        if 'default' in func_schema:
+            ret += f" = {func_schema['default']}"
+        else:
+            ret += " | None = None"
+        return ret
+
     def _get_func_params(self, get: Get) -> str:
         ret = ""
         if "parameters" in get:
-            pass
-        
+            for param in get["parameters"]:
+                # We first write the required parameters
+                if param["required"]:
+                    ret += f", {param['name']}: {convert_type(param['schema']['type'])}"
+
+            # We now put the rest
+            for param in get["parameters"]:
+                if not param["required"]:
+                    ret += self._get_func_param_with_default(param)
+
         return ret
 
     def _get_func_param_desc(self, get: Get) -> str:
