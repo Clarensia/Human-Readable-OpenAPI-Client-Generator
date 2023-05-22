@@ -3,7 +3,7 @@ import os
 from typing import Any, Dict, List, Tuple
 
 from src.utils import convert_type, extract_schema_name_from_ref
-from src.generators.generator_types import FuncParam, Get, Info, OpenAPI, OpenAPIPath, Schema
+from src.generators.generator_types import FuncParam, Get, Info, OpenAPI, OpenAPIPath, Property, Schema
 
 
 class MainClassGenerator:
@@ -486,6 +486,27 @@ class MainClassGenerator:
         ret += '        """\n'
         return ret
 
+    def _build_returned_value_recursive(self, all_schemas: Dict[str, Schema], schema_name: str, indent: int, put_indent: bool = False) -> str:
+        schema = all_schemas[schema_name]
+        indentation = ' ' * indent
+        if put_indent:
+            ret = f"{indentation}{schema_name}(\n"
+        else:
+            ret = schema_name + "(\n"
+        for property_name in schema:
+            _property: Property = schema[property_name]
+            if _property["type"] == "array":
+                ret += f'{indentation}{property_name}=[\n'
+                schema_name = extract_schema_name_from_ref(_property['items']["$ref"])
+                ret += self._build_returned_value_recursive(all_schemas, schema_name, indent + 4)
+                array_indent = indentation + "    "
+                ret += f'{array_indent} for d in r["{property_name}"]'
+                ret += f'{indentation}]\n'
+            else:
+                ret += f'{indentation}{property_name}=r["{property_name}"]\n'
+
+        return ret + ")\n"
+
     def _build_returned_value(self, get: Get, schema: Dict[str, Schema]) -> str:
         """Build the returned statement of the function.
         
@@ -540,6 +561,16 @@ class MainClassGenerator:
         :return: The code for formating the return value
         :rtype: str
         """
+        ret_type, is_array = self._get_schema_name(get)
+        if is_array:
+            ret = "        return [\n"
+            curr_schema = schema[ret_type]
+            ret += self._build_returned_value_recursive(curr_schema, 12)
+            ret += "            for r in ret\n        ]\n"
+        else:
+            ret = f"        return {self._build_returned_value_recursive(schema, ret_type, 12, True)}"
+
+        return ret
 
     def _get_function_implementation(self, path: str, get: Get, schema: Dict[str, Schema]) -> str:
         ret = f'        ret = await self._do_request({path})\n'
