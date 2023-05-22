@@ -387,7 +387,19 @@ class MainClassGenerator:
         return ret
 
     def _get_func_param_desc(self, get: Get) -> str:
-        return ""
+        ret = ""
+        if "parameter" in get:
+            for param in get["parameters"]:
+                if param["required"]:
+                    ret += f'        :param {param["name"]}: {param["description"]}\n'
+                    ret += f'        :type {param["name"]}: {convert_type(param["schema"]["type"])}\n'
+
+            for param in get["parameters"]:
+                if not param["required"]:
+                    ret += f'        :param {param["name"]}: {param["description"]}\n'
+                    ret += f'        :type {param["name"]}: {convert_type(param["schema"]["type"])}\n'
+
+        return ret
 
     def _get_func_example_response(self, get: Get, schema: Dict[str, Schema]) -> str:
         pass
