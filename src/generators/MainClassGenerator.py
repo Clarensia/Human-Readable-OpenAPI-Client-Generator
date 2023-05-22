@@ -1,7 +1,7 @@
 import os
 from typing import Dict, List
 
-from src.utils import convert_type
+from src.utils import convert_type, get_example
 from src.generators.generator_types import FuncParam, Get, Info, OpenAPI, OpenAPIPath, Schema
 
 
@@ -401,8 +401,12 @@ class MainClassGenerator:
 
         return ret
 
-    def _get_func_example_response(self, get: Get, schema: Dict[str, Schema]) -> str:
+    def _get_schema_name(self, get: Get) -> str:
         pass
+
+    def _get_func_example_response(self, get: Get, schema: Dict[str, Schema]) -> str:
+        schema_name = self._get_schema_name(get)
+        return get_example(schema[schema_name])
 
     def _get_response_type(self, get: Get) -> str:
         pass
