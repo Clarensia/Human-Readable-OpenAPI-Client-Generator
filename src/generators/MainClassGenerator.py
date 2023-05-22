@@ -1,7 +1,7 @@
 import os
-from typing import Dict, List
+from typing import Any, Dict, List
 
-from src.utils import convert_type, get_example
+from src.utils import convert_type
 from src.generators.generator_types import FuncParam, Get, Info, OpenAPI, OpenAPIPath, Schema
 
 
@@ -404,9 +404,82 @@ class MainClassGenerator:
     def _get_schema_name(self, get: Get) -> str:
         pass
 
+    def _format_example_recursive(self, value: Any) -> str:
+        match value:
+            case int():
+                pass
+
+    def _format_example(self, schema: Schema, indent: int = 8) -> str:
+        """Format the given schema example
+        
+        For example:
+        {
+            "page": 1,
+            "total_pages": 1,
+            "data": [
+                {
+                    "exchange": "lydia_finance_avalanche",
+                    "blockchain": "avalanche",
+                    "name": "Lydia Finance",
+                    "url": "https://exchange.lydia.finance/#/swap",
+                    "fee": 200
+                },
+                {
+                    "exchange": "oliveswap_avalanche",
+                    "blockchain": "avalanche",
+                    "name": "Oliveswap",
+                    "url": "https://avax.olive.cash/",
+                    "fee": 250
+                }
+            ]
+        }
+
+        Will become:
+        Exchanges(
+            page=1,
+            total_pages=1,
+            data=[
+                Exchange(
+                    exchange="lydia_finance_avalanche",
+                    blockchain="avalanche",
+                    name="Lydia Finance",
+                    url="https://exchange.lydia.finance/#/swap",
+                    fee=200
+                ),
+                Exchange(
+                    exchange="oliveswap_avalanche",
+                    blockchain="avalanche",
+                    name="Oliveswap",
+                    url="https://avax.olive.cash/",
+                    fee=250
+                )
+            ]
+        )
+
+        :param schema: The schema that we have to get te the example
+        :type schema: Schema
+        :param indent: The amount of indentation that we should have at start
+        :return: The Example formated
+        :rtype: str
+        """
+        initial_indent = " " * indent
+        second_indent = " " * (indent + 4)
+        ret = f"{initial_indent}{schema['title']}(\n"
+        i = 0
+        last_key = len(schema["example"].keys()) - 1
+        for key in schema["example"]:
+            ret += f'{second_indent}{key}={self._format_example_recursive(schema["example"][key])}'
+            if i != last_key:
+                ret += ","
+            ret += "\n"
+            i += 1
+        ret += ")\n"
+
+        return ret
+
     def _get_func_example_response(self, get: Get, schema: Dict[str, Schema]) -> str:
         schema_name = self._get_schema_name(get)
-        return get_example(schema[schema_name])
+        return self._format_example(schema[schema_name])
 
     def _get_response_type(self, get: Get) -> str:
         pass

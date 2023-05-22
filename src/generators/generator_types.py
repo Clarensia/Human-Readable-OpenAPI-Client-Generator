@@ -1,4 +1,4 @@
-from typing import Dict, List, TypedDict
+from typing import Any, Dict, List, TypedDict
 
 Info = TypedDict('Info', {
     "title": str,
@@ -71,7 +71,7 @@ Schema = TypedDict('Schema', {
     "title": str,
     "type": str,
     "properties": Dict[str, Property],
-    "example": Dict[str, str | int]
+    "example": Dict[str, Any]
 })
 
 Components = TypedDict('Components', {
