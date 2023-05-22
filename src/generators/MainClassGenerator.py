@@ -487,7 +487,59 @@ class MainClassGenerator:
         return ret
 
     def _build_returned_value(self, get: Get, schema: Dict[str, Schema]) -> str:
-        pass
+        """Build the returned statement of the function.
+        
+        This return statement have to build entirely our models
+        We need to build the model this way, for example:
+        Example schema:
+        ```json
+        {
+            "page": 1,
+            "total_pages": 1,
+            "data": [
+                {
+                    "exchange": "lydia_finance_avalanche",
+                    "blockchain": "avalanche",
+                    "name": "Lydia Finance",
+                    "url": "https://exchange.lydia.finance/#/swap",
+                    "fee": 200
+                },
+                {
+                    "exchange": "oliveswap_avalanche",
+                    "blockchain": "avalanche",
+                    "name": "Oliveswap",
+                    "url": "https://avax.olive.cash/",
+                    "fee": 250
+                }
+            ]
+        }
+        ```
+
+        Will have to be formated this way:
+        ```python
+        return Exchanges(
+            ret["page"],
+            ret["total_pages"],
+            [
+                Exchange(
+                    d["exchange"],
+                    d["blockchain"],
+                    d["name"],
+                    d["url"],
+                    d["fee"]
+                )
+                for d in ret["data"]
+            ]
+        )
+        ```
+
+        :param get: The get parameters
+        :type get: Get
+        :param schema: The dictionary containing all of the schemas
+        :type schema: Dict[str, Schema]
+        :return: The code for formating the return value
+        :rtype: str
+        """
 
     def _get_function_implementation(self, path: str, get: Get, schema: Dict[str, Schema]) -> str:
         ret = f'        ret = await self._do_request({path})\n'
