@@ -486,10 +486,10 @@ class MainClassGenerator:
         ret += '        """\n'
         return ret
 
-    def _build_returned_value_recursive(self, all_schemas: Dict[str, Schema], schema_name: str, indent: int, put_indent: bool = False) -> str:
+    def _build_returned_value_recursive(self, all_schemas: Dict[str, Schema], schema_name: str, indent: int, is_first: bool = False) -> str:
         schema = all_schemas[schema_name]
         indentation = ' ' * indent
-        if put_indent:
+        if not is_first:
             ret = f"{indentation}{schema_name}(\n"
         else:
             ret = schema_name + "(\n"
@@ -505,7 +505,10 @@ class MainClassGenerator:
             else:
                 ret += f'{indentation}{property_name}=r["{property_name}"]\n'
 
-        return ret + ")\n"
+        if is_first:
+            return ret + "\n"
+        else:
+            return ret + f"{indentation})\n"
 
     def _build_returned_value(self, get: Get, schema: Dict[str, Schema]) -> str:
         """Build the returned statement of the function.
@@ -570,7 +573,7 @@ class MainClassGenerator:
         else:
             ret = f"        return {self._build_returned_value_recursive(schema, ret_type, 12, True)}"
 
-        return ret
+        return ret + ")\n"
 
     def _get_function_implementation(self, path: str, get: Get, schema: Dict[str, Schema]) -> str:
         ret = f'        ret = await self._do_request({path})\n'
