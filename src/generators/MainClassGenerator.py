@@ -281,11 +281,13 @@ class MainClassGenerator:
         return ret
 
     def _add_class_begining(self, infos: Info) -> str:
-        return f'''
+        ret = f'''
 class {self._class_name}:
     """{infos["title"]}
 
-    {infos["description"]}
+'''
+        ret += infos["description"] + "\n"
+        ret += f'''
     """
         
     _api_key: str | None = None
@@ -347,6 +349,7 @@ class {self._class_name}:
         async with self._session.get(path, params=params, headers=self._headers) as response:
             return await response.json()
 '''
+        return ret
 
     def _get_method_name(self, path: str) -> str:
         splited = path.split('/')
