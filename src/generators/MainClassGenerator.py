@@ -281,13 +281,11 @@ class MainClassGenerator:
         return ret
 
     def _add_class_begining(self, infos: Info) -> str:
-        ret = f'''
+        return f'''
 class {self._class_name}:
     """{infos["title"]}
 
-'''
-        ret += infos["description"] + "\n"
-        ret += f'''
+    {infos["description"]}
     """
         
     _api_key: str | None = None
@@ -319,9 +317,9 @@ class {self._class_name}:
         :type api_key: str | None, optional
         """
         self._api_key = api_key
-        self._headers = {
+        self._headers = {{
             "accept": "application/json"
-        }
+        }}
         if self._api_key is not None:
             self._headers["api-key"] = self._api_key
         self._session = ClientSession({self._api_url})
@@ -349,7 +347,6 @@ class {self._class_name}:
         async with self._session.get(path, params=params, headers=self._headers) as response:
             return await response.json()
 '''
-        return ret
 
     def _get_method_name(self, path: str) -> str:
         splited = path.split('/')
