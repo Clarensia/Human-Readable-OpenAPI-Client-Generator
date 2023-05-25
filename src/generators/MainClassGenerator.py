@@ -595,7 +595,21 @@ class {self._class_name}:
         return ret + ")\n"
 
     def _get_function_implementation(self, path: str, get: Get, schema: Dict[str, Schema]) -> str:
-        ret = f'        ret = await self._do_request({path})\n'
+        ret = ""
+        if "parameters" in get:
+            ret += '        params = {}\n'
+            for param in get["parameters"]:
+                if not param["required"]:
+                    if "default" in param["schema"]:
+                        ret += f'        params["{param["name"]}"] = {param["name"]}\n'
+                    else:
+                        ret += f'        if {param["name"]} is not None:\n'
+                        ret += f'            params["{param["name"]}"] = {param["name"]}\n'
+                else:
+                    ret += f'        params["{param["name"]}] = {param["name"]}\n'
+            ret += f'        await self._do_request("{path}", params)'
+        else:
+            ret += f'        ret = await self._do_request("{path}")\n'
         ret += self._build_returned_value(get, schema)
         return ret
 
