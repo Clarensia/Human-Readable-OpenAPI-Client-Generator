@@ -497,8 +497,8 @@ class {self._class_name}:
             ret = f"{indentation}{schema_name}(\n"
         else:
             ret = schema_name + "(\n"
-        for property_name in schema:
-            _property: Property = schema[property_name]
+        for property_name in schema["properties"]:
+            _property: Property = schema["properties"][property_name]
             if _property["type"] == "array":
                 ret += f'{indentation}{property_name}=[\n'
                 schema_name = extract_schema_name_from_ref(_property['items']["$ref"])
