@@ -464,7 +464,7 @@ class {self._class_name}:
         indentation = ' ' * indent
         # Add the 4 spaces at the beginning of each lines
         space_added = '\n'.join(indentation + line for line in json_string.splitlines())
-        return f'{indent}```json\n{space_added}\n```\n'
+        return f'{space_added}\n'
 
     def _get_func_example_response(self, get: Get, schema: Dict[str, Schema]) -> str:
         schema_name, is_array = self._get_schema_name(get)
@@ -486,7 +486,7 @@ class {self._class_name}:
         ret = ""
         ret += f'        """{get["summary"]}\n\n'
         ret += self._get_func_param_desc(get)
-        ret += f'        :return: {get["responses"]["200"]["description"]}\n'
+        ret += f'        :return: {add_indent(get["responses"]["200"]["description"], 8, True)}\n'
         ret += "\n        Example response:\n"
         ret += self._get_func_example_response(get, schema)
         ret += "\n"

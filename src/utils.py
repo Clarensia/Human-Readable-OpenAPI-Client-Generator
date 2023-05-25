@@ -45,15 +45,23 @@ def extract_schema_name_from_ref(ref: str) -> str:
     """
     return ref.split("/")[-1]
 
-def add_indent(text: str, indent: int) -> str:
+def add_indent(text: str, indent: int, except_first_line: bool = False) -> str:
     """Add indent spaces after each new lines of text
 
     :param text: The text that we have to write with multiple lines
     :type text: str
     :param indent: The amount of indentation that we should have
     :type indent: int
+    :param except_first_line: If we should not add indent for the first line, default False
+    :type except_first_line: bool
     :return: The text with spaces added
     :rtype: str
     """
     indentation = " " * indent
-    return '\n'.join(indentation + line for line in text.splitlines())
+    split_line = text.splitlines()
+    if len(split_line) == 0:
+        return text
+    ret = f"{indentation}{split_line[0]}" if not except_first_line else split_line[0]
+    for i in range(1, len(split_line)):
+        ret += f"{indentation}{split_line[i]}"
+    return ret
