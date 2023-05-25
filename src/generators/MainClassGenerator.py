@@ -513,6 +513,8 @@ class {self._class_name}:
             ret = f"{indentation}{schema_name}(\n"
         else:
             ret = schema_name + "(\n"
+        indent += 4
+        new_indentation = indentation + "    "
         for property_name in schema["properties"]:
             _property: Property = schema["properties"][property_name]
             if _property["type"] == "array":
@@ -521,12 +523,12 @@ class {self._class_name}:
                 ret += self._build_returned_value_recursive(all_schemas, schema_name, indent + 4)
                 array_indent = indentation + "    "
                 ret += f'{array_indent} for d in r["{property_name}"]'
-                ret += f'{indentation}]\n'
+                ret += f'{new_indentation}]\n'
             else:
-                ret += f'{indentation}{property_name}=r["{property_name}"]\n'
+                ret += f'{new_indentation}{property_name}=r["{property_name}"],\n'
 
         if is_first:
-            return ret + "\n"
+            return ret + ")\n"
         else:
             return ret + f"{indentation})\n"
 
@@ -592,7 +594,7 @@ class {self._class_name}:
         else:
             ret = f"        return {self._build_returned_value_recursive(schema, ret_type, 12, True)}"
 
-        return ret + ")\n"
+        return ret + "\n"
 
     def _get_function_implementation(self, path: str, get: Get, schema: Dict[str, Schema]) -> str:
         ret = ""
