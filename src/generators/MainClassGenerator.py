@@ -494,7 +494,7 @@ class {self._class_name}:
         ret += '        """\n'
         return ret
 
-    def _build_returned_value_recursive(self, all_schemas: Dict[str, Schema], schema_name: str, indent: int, is_first: bool = False) -> str:
+    def _build_returned_value_recursive(self, all_schemas: Dict[str, Schema], schema_name: str, indent: int, ret_str: str, is_first: bool = False) -> str:
         if is_native_python_type(schema_name):
             if not is_first:
                 indentation = ' ' * indent
@@ -519,12 +519,12 @@ class {self._class_name}:
             if _property["type"] == "array":
                 ret += f'{indentation}{property_name}=[\n'
                 schema_name = extract_schema_name_from_ref(_property['items']["$ref"])
-                ret += self._build_returned_value_recursive(all_schemas, schema_name, indent + 4)
+                ret += self._build_returned_value_recursive(all_schemas, schema_name, "d", indent + 4)
                 array_indent = indentation + "    "
-                ret += f'{array_indent} for d in ret["{property_name}"]'
+                ret += f'{array_indent} for d in ret_str["{property_name}"]'
                 ret += f'{indentation}]\n'
             else:
-                ret += f'    {indentation}{property_name}=r["{property_name}"],\n'
+                ret += f'    {indentation}{property_name}={ret_str}["{property_name}"],\n'
 
         if is_first:
             return ret + ")\n"
@@ -588,10 +588,10 @@ class {self._class_name}:
         ret_type, is_array = self._get_schema_name(get)
         if is_array:
             ret = "        return [\n"
-            ret += self._build_returned_value_recursive(schema, ret_type, 12)
+            ret += self._build_returned_value_recursive(schema, ret_type, 12, "r")
             ret += "            for r in ret\n        ]\n"
         else:
-            ret = f"        return {self._build_returned_value_recursive(schema, ret_type, 12, True)}"
+            ret = f'        return {self._build_returned_value_recursive(schema, ret_type, 12, "ret", True)}'
 
         return ret + "\n"
 
@@ -607,7 +607,7 @@ class {self._class_name}:
                         ret += f'        if {param["name"]} is not None:\n'
                         ret += f'            params["{param["name"]}"] = {param["name"]}\n'
                 else:
-                    ret += f'        params["{param["name"]}] = {param["name"]}\n'
+                    ret += f'        params["{param["name"]}"] = {param["name"]}\n'
             ret += f'        ret = await self._do_request("{path}", params)\n'
         else:
             ret += f'        ret = await self._do_request("{path}")\n'
