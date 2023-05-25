@@ -251,14 +251,51 @@ class MainClassGenerator:
             
         return False
 
-    def _get_models_to_import(self, paths: Dict[str, OpenAPIPath]) -> List[str]:
+    def _get_depend_schemas(self, schema: str, all_schema: Dict[str, Schema]) -> List[str]:
+        """When we import a schema, sometimes, the schema will have a list of another shema,
+        so we need to import the other schema also.
+        
+        This method allow us to detect dependant schemas
+
+        :param schema: The schema name
+        :type schema: str
+        :param all_schema: The dictionary containing as key the schema name and as value the given
+                           schema
+        :type all_schema: Dict[str, Schema]
+        :return: The list of schema names
+        :rtype: List[str]
+        """
+        curr_schema = all_schema[schema]
+        ret = []
+        for property_name in curr_schema["properties"]:
+            _proterty = curr_schema["properties"][property_name]
+            if _proterty["type"] != "string" and _proterty["type"] != "integer":
+                if _proterty["type"] == "array":
+                    ret.append(extract_schema_name_from_ref(_proterty["items"]["$ref"]))
+                else:
+                    raise Exception(f"Not supported property type: {_proterty['type']}")
+        return ret
+
+    def _get_models_to_import(self, paths: Dict[str, OpenAPIPath], all_schema: Dict[str, Schema]) -> List[str]:
         ret = []
         for path in paths:
             returned_schema = paths[path]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
             if "items" in returned_schema:
-                ret.append(returned_schema["items"]["$ref"].split("/")[-1])
+                schema_to_add = returned_schema["items"]["$ref"].split("/")[-1]
+                if schema_to_add not in ret:
+                    ret.append(schema_to_add)
+                dependant_schemas = self._get_depend_schemas(schema_to_add, all_schema)
+                for dependant_schema in dependant_schemas:
+                    if dependant_schema not in ret:
+                        ret.append(dependant_schema)
             elif "$ref" in returned_schema:
-                ret.append(returned_schema["$ref"].split("/")[-1])
+                schema_to_add = returned_schema["$ref"].split("/")[-1]
+                if schema_to_add not in ret:
+                    ret.append(schema_to_add)
+                dependant_schemas = self._get_depend_schemas(schema_to_add, all_schema)
+                for dependant_schema in dependant_schemas:
+                    if dependant_schema not in ret:
+                        ret.append(dependant_schema)
             elif "type" in returned_schema:
                 # It can be a simple int, so nothing to import
                 continue
@@ -266,7 +303,7 @@ class MainClassGenerator:
                 raise Exception(f"Not 'item' nor '$ref' in current returned schema: {returned_schema}")
         return ret                
 
-    def _add_necessary_imports(self, paths: Dict[str, OpenAPIPath]) -> str:
+    def _add_necessary_imports(self, paths: Dict[str, OpenAPIPath], all_schema: Dict[str, Schema]) -> str:
         ret = ""
         if self._has_list(paths):
             ret += "from typing import Any, Dict, List\n"
@@ -274,7 +311,7 @@ class MainClassGenerator:
             ret += "from typing import Any, Dict\n"
         ret += "\nfrom aiohttp import ClientSession\n\n"
 
-        models_to_import = self._get_models_to_import(paths)
+        models_to_import = self._get_models_to_import(paths, all_schema)
         for model in models_to_import:
             ret += f"from models.{model} import {model}\n"
 
@@ -628,7 +665,7 @@ class {self._class_name}:
 
     def generate_main_class(self, open_api_file: OpenAPI):
         main_class_text = ""
-        main_class_text += self._add_necessary_imports(open_api_file["paths"])
+        main_class_text += self._add_necessary_imports(open_api_file["paths"], open_api_file["components"]["schemas"])
         main_class_text += "\n\n"
         main_class_text += self._add_class_begining(open_api_file["info"])
         main_class_text += "\n"
