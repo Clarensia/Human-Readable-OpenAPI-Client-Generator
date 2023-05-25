@@ -20,6 +20,18 @@ def convert_type(type: str) -> str:
         case other:
             raise Exception(f"{other} is not a supported type")
 
+def is_native_python_type(schema_name: str) -> bool:
+    """Verify if the given schema name is a native python type.
+    
+    A native python type is "int", or "str"
+
+    :param schema_name: The name of the schema
+    :type schema_name: str
+    :return: `True` if the given type name is a Python native type, `False` otherwise
+    :rtype: bool
+    """
+    return schema_name == "int" or schema_name == "str"
+
 def extract_schema_name_from_ref(ref: str) -> str:
     """Extract the schema name from a certain $ref value
     

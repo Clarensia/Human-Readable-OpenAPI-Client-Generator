@@ -2,7 +2,7 @@ import json
 import os
 from typing import Any, Dict, List, Tuple
 
-from src.utils import convert_type, extract_schema_name_from_ref
+from src.utils import convert_type, extract_schema_name_from_ref, is_native_python_type
 from src.generators.generator_types import FuncParam, Get, Info, OpenAPI, OpenAPIPath, Property, Schema
 
 
@@ -470,6 +470,8 @@ class {self._class_name}:
         schema_name, is_array = self._get_schema_name(get)
         if is_array:
             return f'        ```json\n        [\n{self._format_example(schema[schema_name], 12)}\n        ]\n```'
+        elif is_native_python_type(schema_name):
+            return f'        ```json\n        16\n        ```'
         else:
             return f'        ```json\n{self._format_example(schema[schema_name], 8)}\n        ```'
 
