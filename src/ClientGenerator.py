@@ -6,7 +6,8 @@ import yaml
 
 from argparse import Namespace
 from typing import Dict
-from ConfigType import ConfigType
+
+from src.ConfigType import ConfigType
 from src.generators.MainClassGenerator import MainClassGenerator
 from src.generators.ModelGenerator import ModelGenerator
 
