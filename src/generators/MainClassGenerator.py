@@ -514,7 +514,6 @@ class {self._class_name}:
         else:
             ret = schema_name + "(\n"
         indent += 4
-        new_indentation = indentation + "    "
         for property_name in schema["properties"]:
             _property: Property = schema["properties"][property_name]
             if _property["type"] == "array":
@@ -522,10 +521,10 @@ class {self._class_name}:
                 schema_name = extract_schema_name_from_ref(_property['items']["$ref"])
                 ret += self._build_returned_value_recursive(all_schemas, schema_name, indent + 4)
                 array_indent = indentation + "    "
-                ret += f'{array_indent} for d in r["{property_name}"]'
-                ret += f'{new_indentation}]\n'
+                ret += f'{array_indent} for d in ret["{property_name}"]'
+                ret += f'{indentation}]\n'
             else:
-                ret += f'{new_indentation}{property_name}=r["{property_name}"],\n'
+                ret += f'    {indentation}{property_name}=r["{property_name}"],\n'
 
         if is_first:
             return ret + ")\n"
@@ -609,7 +608,7 @@ class {self._class_name}:
                         ret += f'            params["{param["name"]}"] = {param["name"]}\n'
                 else:
                     ret += f'        params["{param["name"]}] = {param["name"]}\n'
-            ret += f'        await self._do_request("{path}", params)\n'
+            ret += f'        ret = await self._do_request("{path}", params)\n'
         else:
             ret += f'        ret = await self._do_request("{path}")\n'
         ret += self._build_returned_value(get, schema)
