@@ -259,6 +259,9 @@ class MainClassGenerator:
                 ret.append(returned_schema["items"]["$ref"].split("/")[-1])
             elif "$ref" in returned_schema:
                 ret.append(returned_schema["$ref"].split("/")[-1])
+            elif "type" in returned_schema:
+                # It can be a simple int, so nothing to import
+                continue
             else:
                 raise Exception(f"Not 'item' nor '$ref' in current returned schema: {returned_schema}")
         return ret                
