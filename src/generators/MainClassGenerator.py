@@ -607,7 +607,7 @@ class {self._class_name}:
                         ret += f'            params["{param["name"]}"] = {param["name"]}\n'
                 else:
                     ret += f'        params["{param["name"]}] = {param["name"]}\n'
-            ret += f'        await self._do_request("{path}", params)'
+            ret += f'        await self._do_request("{path}", params)\n'
         else:
             ret += f'        ret = await self._do_request("{path}")\n'
         ret += self._build_returned_value(get, schema)
