@@ -418,7 +418,7 @@ class {self._class_name}:
         :return: At first the name of the schema and as second if it is an array or not
         :rtype: Tuple[str, bool]
         """
-        schema = get["responses"][200]["content"]["application/json"]["schema"]
+        schema = get["responses"]["200"]["content"]["application/json"]["schema"]
         if "$ref" in schema:
             return extract_schema_name_from_ref(schema["$ref"]), False
         else:
@@ -482,7 +482,7 @@ class {self._class_name}:
         ret = ""
         ret += f'        """{get["summary"]}\n\n'
         ret += self._get_func_param_desc(get)
-        ret += f'        :return: {get["responses"][200]["description"]}\n'
+        ret += f'        :return: {get["responses"]["200"]["description"]}\n'
         ret += "\n        Example response:\n"
         ret += self._get_func_example_response(get, schema)
         ret += "\n"
@@ -571,8 +571,7 @@ class {self._class_name}:
         ret_type, is_array = self._get_schema_name(get)
         if is_array:
             ret = "        return [\n"
-            curr_schema = schema[ret_type]
-            ret += self._build_returned_value_recursive(curr_schema, 12)
+            ret += self._build_returned_value_recursive(schema, ret_type, 12)
             ret += "            for r in ret\n        ]\n"
         else:
             ret = f"        return {self._build_returned_value_recursive(schema, ret_type, 12, True)}"
