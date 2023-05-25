@@ -2,13 +2,29 @@ import json
 import os
 import sys
 
+import yaml
+
 from argparse import Namespace
 from typing import Dict
+from ConfigType import ConfigType
 from src.generators.MainClassGenerator import MainClassGenerator
 from src.generators.ModelGenerator import ModelGenerator
 
 from src.generators.generator_types import Schema
 
+
+from yaml.loader import SafeLoader
+
+def _parse_config(config_path: str) -> ConfigType:
+    """Parse the config file
+
+    :param config_path: The path to the config file
+    :type config_path: str
+    :return: The config file parsed as dictionary
+    :rtype: ConfigType
+    """
+    with open(config_path, "r") as f:
+        return yaml.load(f, Loader=SafeLoader)
 
 class ClientGenerator:
     """Allow us to generate a client from an OpenAPI SDK.
@@ -41,10 +57,12 @@ class ClientGenerator:
     def __init__(self, arguments: Namespace):
         self._verify_args(arguments)
         self._open_api_file_path = arguments.file
+        config_file = arguments.config
         self._dest_folder = arguments.dest
         self._models_folder = os.path.join(self._dest_folder, "models")
         self._exceptions_folder = os.path.join(self._dest_folder, "exceptions")
-        self._main_class_generator = MainClassGenerator()
+        config_parsed = _parse_config(config_file)
+        self._main_class_generator = MainClassGenerator(config_parsed["name"], config_parsed["api-url"], self._dest_folder)
         self._model_generator = ModelGenerator(self._models_folder, self._exceptions_folder)
 
     def _verify_args(self, arguments: Namespace):
@@ -70,6 +88,9 @@ class ClientGenerator:
             sys.exit(1)
         if os.path.isfile(arguments.dest):
             print(f"The destination folder: {arguments.dest} is a file, it should be either an empty folder or not exist.")
+            sys.exit(1)
+        if not os.path.isfile(arguments.config):
+            print(f"The configuration file does not exits: {arguments.config}")
             sys.exit(1)
 
     def _init_dest_folder(self):
