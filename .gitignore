@@ -2,3 +2,4 @@
 secret_*
 dest
 __pycache__
+venv/
