@@ -116,7 +116,7 @@ class ClientGenerator:
         """
         with open(self._open_api_file_path, "r") as f:
             open_api_file = json.load(f)
-        self._init_dest_folder()
+        self._init_dest_folder(self._dest_folder)
         create_requirements()
         self._main_class_generator.generate_main_class(open_api_file)
         schemas: Dict[str, Schema] = open_api_file["components"]["schemas"]
