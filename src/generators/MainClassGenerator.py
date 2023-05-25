@@ -552,6 +552,7 @@ class {self._class_name}:
             new_indentation += "    "
         else:
             ret = schema_name + "(\n"
+        property_count = 0
         for property_name in schema["properties"]:
             _property: Property = schema["properties"][property_name]
             if _property["type"] == "array":
@@ -562,7 +563,12 @@ class {self._class_name}:
                 ret += f'{array_indent}for d in {ret_str}["{property_name}"]\n'
                 ret += f'{indentation}]\n'
             else:
-                ret += f'{new_indentation}{property_name}={ret_str}["{property_name}"],\n'
+                ret += f'{new_indentation}{property_name}={ret_str}["{property_name}"]'
+                if property_count == len(schema["properties"]) - 1:
+                    ret += "\n"
+                else:
+                    ret += ",\n"
+            property_count += 1
 
         if is_first:
             return ret + f"        )\n"
