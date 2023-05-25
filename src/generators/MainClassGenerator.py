@@ -269,7 +269,7 @@ class MainClassGenerator:
         ret = []
         for property_name in curr_schema["properties"]:
             _proterty = curr_schema["properties"][property_name]
-            if _proterty["type"] != "string" and _proterty["type"] != "integer":
+            if _proterty["type"] != "string" and _proterty["type"] != "integer" and _proterty["type"] != "number":
                 if _proterty["type"] == "array":
                     ret.append(extract_schema_name_from_ref(_proterty["items"]["$ref"]))
                 else:
