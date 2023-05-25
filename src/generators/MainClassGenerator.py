@@ -371,7 +371,7 @@ class {self._class_name}:
         :rtype: str
         """
         func_schema = param['schema']
-        ret = f"{param['name']}: {func_schema['type']}"
+        ret = f", {param['name']}: {func_schema['type']}"
         if 'default' in func_schema:
             ret += f" = {func_schema['default']}"
         else:
@@ -602,7 +602,7 @@ class {self._class_name}:
     def _add_method(self, path: str, path_object: OpenAPIPath, schema: Dict[str, Schema]) -> str:
         get = path_object["get"]
         method_name = self._get_method_name(path)
-        ret = f"async def {method_name}(self{self._get_func_params(get)}):\n"
+        ret = f"    async def {method_name}(self{self._get_func_params(get)}):\n"
         ret += self._get_function_description(get, schema)
         ret += self._get_function_implementation(path, get, schema)
         return ret
