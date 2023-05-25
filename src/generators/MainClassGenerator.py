@@ -495,6 +495,18 @@ class {self._class_name}:
         return ret
 
     def _build_returned_value_recursive(self, all_schemas: Dict[str, Schema], schema_name: str, indent: int, is_first: bool = False) -> str:
+        if is_native_python_type(schema_name):
+            if not is_first:
+                indentation = ' ' * indent
+                if schema_name == "int":
+                    return f"{indentation}{schema_name}(ret)"
+                else:
+                    return f"{indentation}ret"
+            else:
+                if schema_name == "int":
+                    return "int(ret)"
+                else:
+                    return "ret"
         schema = all_schemas[schema_name]
         indentation = ' ' * indent
         if not is_first:
