@@ -519,9 +519,9 @@ class {self._class_name}:
             if _property["type"] == "array":
                 ret += f'{indentation}{property_name}=[\n'
                 schema_name = extract_schema_name_from_ref(_property['items']["$ref"])
-                ret += self._build_returned_value_recursive(all_schemas, schema_name, "d", indent + 4)
+                ret += self._build_returned_value_recursive(all_schemas, schema_name, indent + 4, "d")
                 array_indent = indentation + "    "
-                ret += f'{array_indent} for d in ret_str["{property_name}"]'
+                ret += f'{array_indent} for d in {ret_str}["{property_name}"]'
                 ret += f'{indentation}]\n'
             else:
                 ret += f'    {indentation}{property_name}={ret_str}["{property_name}"],\n'
