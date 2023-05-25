@@ -62,6 +62,7 @@ def add_indent(text: str, indent: int, except_first_line: bool = False) -> str:
     if len(split_line) == 0:
         return text
     ret = f"{indentation}{split_line[0]}" if not except_first_line else split_line[0]
+    ret += "\n"
     for i in range(1, len(split_line)):
-        ret += f"{indentation}{split_line[i]}"
+        ret += f"{indentation}{split_line[i]}\n"
     return ret
