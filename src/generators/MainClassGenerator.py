@@ -546,11 +546,12 @@ class {self._class_name}:
                     return "ret"
         schema = all_schemas[schema_name]
         indentation = ' ' * indent
+        new_indentation = indentation
         if not is_first:
             ret = f"{indentation}{schema_name}(\n"
+            new_indentation += "    "
         else:
             ret = schema_name + "(\n"
-        indent += 4
         for property_name in schema["properties"]:
             _property: Property = schema["properties"][property_name]
             if _property["type"] == "array":
@@ -558,13 +559,13 @@ class {self._class_name}:
                 schema_name = extract_schema_name_from_ref(_property['items']["$ref"])
                 ret += self._build_returned_value_recursive(all_schemas, schema_name, indent + 4, "d")
                 array_indent = indentation + "    "
-                ret += f'{array_indent} for d in {ret_str}["{property_name}"]'
+                ret += f'{array_indent}for d in {ret_str}["{property_name}"]\n'
                 ret += f'{indentation}]\n'
             else:
-                ret += f'    {indentation}{property_name}={ret_str}["{property_name}"],\n'
+                ret += f'{new_indentation}{property_name}={ret_str}["{property_name}"],\n'
 
         if is_first:
-            return ret + ")\n"
+            return ret + f"        )\n"
         else:
             return ret + f"{indentation})\n"
 
