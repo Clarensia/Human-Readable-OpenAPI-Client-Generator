@@ -4,8 +4,8 @@
 
 The goal of this repository is to create an API client (SDK) from an OpenAPI json file.
 
-The created client will be very lightweight with no external dependencies. It will also
-be human-readable so that the generated client can easily be modified.
+The created client will be very lightweight with only aiohttp as external dependency. It will also
+be human-readable so that the generated client can easily be modified and read by developers.
 
 ## The generated client
 

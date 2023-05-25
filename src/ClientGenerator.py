@@ -8,6 +8,7 @@ from argparse import Namespace
 from typing import Dict
 
 from src.ConfigType import ConfigType
+from src.generators.create_requirements import create_requirements
 from src.generators.MainClassGenerator import MainClassGenerator
 from src.generators.ModelGenerator import ModelGenerator
 
@@ -116,6 +117,7 @@ class ClientGenerator:
         with open(self._open_api_file_path, "r") as f:
             open_api_file = json.load(f)
         self._init_dest_folder()
+        create_requirements()
         self._main_class_generator.generate_main_class(open_api_file)
         schemas: Dict[str, Schema] = open_api_file["components"]["schemas"]
         self._model_generator.build_models(schemas)
