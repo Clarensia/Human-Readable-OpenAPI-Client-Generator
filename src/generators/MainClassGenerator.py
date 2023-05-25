@@ -421,6 +421,8 @@ class {self._class_name}:
         schema = get["responses"]["200"]["content"]["application/json"]["schema"]
         if "$ref" in schema:
             return extract_schema_name_from_ref(schema["$ref"]), False
+        elif "items" not in schema:
+            return convert_type(schema["type"]), False
         else:
             return extract_schema_name_from_ref(schema["items"]["$ref"]), True
 
