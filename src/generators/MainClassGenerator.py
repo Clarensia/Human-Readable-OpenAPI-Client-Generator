@@ -2,19 +2,8 @@ import json
 import os
 from typing import Any, Dict, List, Tuple
 
-from src.utils import convert_type, extract_schema_name_from_ref, is_native_python_type
+from src.utils import add_indent, convert_type, extract_schema_name_from_ref, is_native_python_type
 from src.generators.generator_types import FuncParam, Get, Info, OpenAPI, OpenAPIPath, Property, Schema
-
-
-def _format_description(description: str) -> str:
-    """Format the description by adding 4 spaces after each new lines
-
-    :param description: The description that we have to write
-    :type description: str
-    :return: The description with added 4 spaces after each new line
-    :rtype: str
-    """
-    return '\n'.join("    " + line for line in description.splitlines())
 
 
 class MainClassGenerator:
@@ -296,7 +285,7 @@ class MainClassGenerator:
 class {self._class_name}:
     """{infos["title"]}
 
-    {infos["description"]}
+    {add_indent(infos["description"], 4)}
     """
         
     _api_key: str | None = None

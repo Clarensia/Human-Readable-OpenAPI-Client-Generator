@@ -44,3 +44,16 @@ def extract_schema_name_from_ref(ref: str) -> str:
     :rtype: str
     """
     return ref.split("/")[-1]
+
+def add_indent(text: str, indent: int) -> str:
+    """Add indent spaces after each new lines of text
+
+    :param text: The text that we have to write with multiple lines
+    :type text: str
+    :param indent: The amount of indentation that we should have
+    :type indent: int
+    :return: The text with spaces added
+    :rtype: str
+    """
+    indentation = " " * indent
+    return '\n'.join(indentation + line for line in text.splitlines())
