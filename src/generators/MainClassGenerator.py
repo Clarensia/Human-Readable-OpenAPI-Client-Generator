@@ -6,6 +6,17 @@ from src.utils import convert_type, extract_schema_name_from_ref, is_native_pyth
 from src.generators.generator_types import FuncParam, Get, Info, OpenAPI, OpenAPIPath, Property, Schema
 
 
+def _format_description(description: str) -> str:
+    """Format the description by adding 4 spaces after each new lines
+
+    :param description: The description that we have to write
+    :type description: str
+    :return: The description with added 4 spaces after each new line
+    :rtype: str
+    """
+    return '\n'.join("    " + line for line in description.splitlines())
+
+
 class MainClassGenerator:
     '''Generates the class that the users will instantiate to interact
     with the API.
@@ -322,7 +333,7 @@ class {self._class_name}:
         }}
         if self._api_key is not None:
             self._headers["api-key"] = self._api_key
-        self._session = ClientSession({self._api_url})
+        self._session = ClientSession("{self._api_url}")
 
     async def close(self):
         """Close the async session object.
