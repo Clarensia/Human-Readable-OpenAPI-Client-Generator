@@ -1,18 +1,18 @@
 from src.generators.generator_types import Schema
 
 
-def convert_type(type: str) -> str:
+def convert_type(give_type: str) -> str:
     """Convert a type from OpenAPI to a python type.
     
     * "integer" -> "int"
     * "string" -> "str"
 
-    :param type: The type in OpenAPI
-    :type type: str
+    :param give_type: The type in OpenAPI
+    :type give_type: str
     :return: The type in python
     :rtype: str
     """
-    match type:
+    match give_type:
         case "integer":
             return "int"
         case "string":

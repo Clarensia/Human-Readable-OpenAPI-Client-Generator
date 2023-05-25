@@ -371,7 +371,7 @@ class {self._class_name}:
         :rtype: str
         """
         func_schema = param['schema']
-        ret = f", {param['name']}: {func_schema['type']}"
+        ret = f", {param['name']}: {convert_type(func_schema['type'])}"
         if 'default' in func_schema:
             ret += f" = {func_schema['default']}"
         else:
