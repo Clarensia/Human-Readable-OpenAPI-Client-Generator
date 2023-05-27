@@ -542,9 +542,26 @@ class {self._class_name}:
         else:
             return schema_name
 
+    def _get_func_error_desc(self, get: Get, schema: Dict[str, Schema]) -> str:
+        ret = ""
+        for response_code in get["responses"]:
+            if response_code != "200":
+                application_json = get["responses"][response_code]["content"]["application/json"]
+                if "schema" in application_json:
+                    exception_thrown = extract_schema_name_from_ref(application_json["schema"]["$ref"])
+                    ret += f'        @raises {exception_thrown}: {get["responses"][response_code]["description"]}\n'
+                elif "oneOf" in application_json:
+                    possible_exceptions = application_json["oneOf"]
+                    for exception in possible_exceptions:
+                        ret += f'        @raises {extract_schema_name_from_ref(exception["$ref"])}: {exception["description"]}\n'
+
+        return ret
+
     def _get_function_description(self, get: Get, schema: Dict[str, Schema]) -> str:
         ret = ""
         ret += f'        """{get["summary"]}\n\n'
+        ret += self._get_func_error_desc(get, schema)
+        ret += "\n"
         ret += self._get_func_param_desc(get)
         ret += f'        :return: {add_indent(get["responses"]["200"]["description"], 8, True)}\n'
         ret += "\n        Example response:\n"
