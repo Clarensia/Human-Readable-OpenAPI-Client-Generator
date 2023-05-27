@@ -1401,6 +1401,56 @@
                     "detail": "Pair 0x8E870D67F660D95d5be530380D0eC0bd388289E1->0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 not found in blockchain Arbitrum",
                     "status_code": 422
                 }
+            },
+            "TooManyRequestException": {
+                "title": "TooManyRequestsException",
+                "description": "Thrown when you are doing more request than you are allowed to the API.\n\nTo prevent this exception you can:\n- Lower the amount of requests that you make to the API per second\n- Upgrade your subscription at: https://dashboard.blockchainapis.io/",
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "title": "Detail",
+                        "description": "The detailed message of the exception",
+                        "type": "string"
+                    },
+                    "status_code": {
+                        "title": "Status Code",
+                        "description": "The status code of the exception",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "detail",
+                    "status_code"
+                ],
+                "example": {
+                    "detail": "Too many requests",
+                    "status_code": 429
+                }
+            },
+            "UnauthorizedException": {
+                "title": "UnauthorizedException",
+                "description": "Thrown when you are trying to make an API request with an invalid or expired\nAPI key.\n\nTo prevent this exception, you can:\n- Make the request without an API key\n- Update/get a valid API key at: https://dashboard.blockchainapis.io/",
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "title": "Detail",
+                        "description": "The detailed message of the exception",
+                        "type": "string"
+                    },
+                    "status_code": {
+                        "title": "Status Code",
+                        "description": "The status code of the exception",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "detail",
+                    "status_code"
+                ],
+                "example": {
+                    "detail": "Unauthorized",
+                    "status_code": 401
+                }
             }
         }
     }
