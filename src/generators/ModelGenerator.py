@@ -3,7 +3,7 @@ import os
 
 from typing import Any, Dict, List
 
-from src.generators.generator_types import Property, Schema
+from src.generators.generator_types import ExceptionExample, Property, Schema
 
 
 class ModelGenerator:
@@ -115,14 +115,17 @@ class ModelGenerator:
     from the returned value is a misstake.
     '''
     
+    _api_name: str
+    """The name of the API"""
     _models_path: str
     """The path to the model folder"""
     _exceptions_path: str
     """The path to the exception folder"""
     
-    def __init__(self, models_path: str, exceptions_path: str):
+    def __init__(self, api_name: str, models_path: str, exceptions_path: str):
         self._models_path = models_path
         self._exceptions_path = exceptions_path
+        self._api_name = api_name
 
     def _has_array(self, properties: Dict[str, Property]) -> bool:
         for property_name in properties:
@@ -275,6 +278,62 @@ class {model_name}:
         with open(os.path.join(self._models_path, model_name + ".py"), "w+") as f:
             f.write(model_text)
 
+    def _write_exception(self, exception_name: str, text: str):
+        with open(os.path.join(self._exceptions_path, exception_name + ".py"), "w+") as f:
+            f.write(text)
+
+    def _write_base_exception(self):
+        """Create the basic Exception file for the name of the API
+        """
+        text = f'''from abc import ABC
+
+class {self._api_name}Exception(Exception, ABC):
+    """Thrown when the API returns us an Exception"""
+    
+    error_code: int
+    """The error code returned by the API"""
+    
+    detail: str
+    """Some details about the error that occured"""
+    
+    def __init__(self, error_code: int, detail: str):
+        self.error_code = error_code
+        self.detail = detail
+        super().__init__(f"{{self.error_code}} - {{self.detail}}")
+
+'''
+        self._write_exception(f"{self._api_name}Exception", text)
+
+    def _write_name_and_description_of_exception(self, exception_name: str, description: str) -> str:
+        """Write the first few lines of the exception which are the name and the
+        description of the Exception.
+        
+        As well as the import to the base exception
+
+        :param exception_name: The name of the exception that we are currently writing
+        :type exception_name: str
+        :param description: The description of the exception
+        :type description: str
+        :return: The exception with first text
+        :rtype: str
+        """
+        main_class_name = f'{self._api_name}Exception'
+        return f'''
+from exceptions.{main_class_name} import {main_class_name}
+
+class {exception_name}({main_class_name}):
+    """
+    {description}
+    """
+
+'''
+
+    def _add_exception_constructor(self) -> str:
+        return '''
+    def __init__(self, error_code: int, detail: str):
+        super().__init__(error_code, detail)    
+'''
+
     def build_models(self, schemas: Dict[str, Schema]):
         """Build the schemas and write them inside of the model folder.
         
@@ -284,14 +343,38 @@ class {model_name}:
                         schema object that we have to create
         :type schemas: Dict[str, Schema]
         """
+        self._write_base_exception()
         for schema_name in schemas:
             # We will handle errors later
             if "Error" in schema_name:
                 continue
-            schema = schemas[schema_name]
-            to_write = ""
-            to_write += self._add_first_lines(schema_name, schema["properties"])
-            for property_name in schema["properties"]:
-                _property = schema["properties"][property_name]
-                to_write += self._add_property(property_name, _property, schema["example"][property_name])
-            self._write_model(schema_name, to_write)
+            elif "Exception" in schema_name:
+                schema = schemas[schema_name]
+                to_write = ""
+                to_write += self._write_name_and_description_of_exception(schema_name, schema["description"])
+                to_write += f'''
+    status_code: str
+    """The error code returned by the call to the API
+    
+    For example: {schema["example"]["error_code"]}
+    """
+
+'''
+                to_write += f'''
+    detail: str
+    """Some details about the error that occured
+    
+    For example:
+    {schema["example"]["detail"]}
+    """
+'''
+                to_write += self._add_exception_constructor()
+                self._write_exception(schema_name, to_write)
+            else:
+                schema = schemas[schema_name]
+                to_write = ""
+                to_write += self._add_first_lines(schema_name, schema["properties"])
+                for property_name in schema["properties"]:
+                    _property = schema["properties"][property_name]
+                    to_write += self._add_property(property_name, _property, schema["example"][property_name])
+                self._write_model(schema_name, to_write)

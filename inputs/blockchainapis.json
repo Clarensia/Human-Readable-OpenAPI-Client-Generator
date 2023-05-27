@@ -2,7 +2,7 @@
     "openapi": "3.0.2",
     "info": {
         "title": "High-frequency DEX API",
-        "description": "\nOur API empowers you to access live financial data across multiple blockchains (currently supporting 6, with more on the way) with unparalleled speed and efficiency.\n\nWhat sets our API apart? We've optimized performance to deliver an impressive 1000+ calls per second per user, with a lightning-fast processing time of less than 2 millisecond per request. Compare that to other solutions with a 20-millisecond processing time and fewer requests per second, and it's clear why developers choose our API for their trading bots.\n\nAnother game-changing feature is our seamless integration across various blockchains and protocols. With our API, you can reuse the same code without changing a single line, simplifying the development process and saving you valuable time.\n\nReady to try it out? [Sign up for a free API key here](http://dashboard.blockchainapis.io) or start exploring the possibilities on this page. Need support or have questions? Join our [Discord community](https://discord.gg/GphRMJXmS5) where our team and fellow developers are eager to help you make the most of our powerful API.\n",
+        "description": "\nOur API empowers you to access live financial data across multiple blockchains (currently supporting 6, with more on the way) with unparalleled speed and efficiency.\n\nWhat sets our API apart? We've optimized performance to deliver an impressive 1000+ calls per second per user, with a lightning-fast processing time of less than 2 millisecond per request. Compare that to other solutions with a 20-millisecond processing time and fewer requests per second, and it's clear why developers choose our API for their trading bots.\n\nAnother game-changing feature is our seamless integration across various blockchains and protocols. With our API, you can reuse the same code without changing a single line, simplifying the development process and saving you valuable time.\n\nReady to try it out? [Sign up for a free API key here](https://dashboard.blockchainapis.io) or start exploring the possibilities on this page. Need support or have questions? Join our [Discord community](https://discord.gg/GphRMJXmS5) where our team and fellow developers are eager to help you make the most of our powerful API.\n",
         "version": "0.2.1"
     },
     "paths": {
@@ -75,11 +75,21 @@
                         }
                     },
                     "422": {
-                        "description": "Validation Error",
+                        "description": "Thrown when an invalid blockchain id is given",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                    "$ref": "#/components/schemas/BlockchainNotSupportedException"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Thrown when an invalid page is given",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvalidPageException"
                                 }
                             }
                         }
@@ -120,11 +130,11 @@
                         }
                     },
                     "422": {
-                        "description": "Validation Error",
+                        "description": "Thrown when an invalid exchange id is given",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                    "$ref": "#/components/schemas/ExchangeNotSupportedException"
                                 }
                             }
                         }
@@ -189,11 +199,28 @@
                         }
                     },
                     "422": {
-                        "description": "Validation Error",
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "oneOf": [
+                                    {
+                                        "description": "Thrown when an invalid blockchain id is given",
+                                        "$ref": "#/components/schemas/BlockchainNotSupportedException"
+                                    },
+                                    {
+                                        "description": "Thrown when an invalid Exchange id is given",
+                                        "$ref": "#/components/schemas/ExchangeNotSupportedException"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Thrown when you give an invalid page number",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                    "$ref": "#/components/schemas/InvalidPageException"
                                 }
                             }
                         }
@@ -276,12 +303,23 @@
                         }
                     },
                     "422": {
-                        "description": "Validation Error",
+                        "description": "Unprocessable Entity",
                         "content": {
                             "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
+                                "oneOf": [
+                                    {
+                                        "description": "Thrown when an invalid blockchain id is given",
+                                        "$ref": "#/components/schemas/BlockchainNotSupportedException"
+                                    },
+                                    {
+                                        "description": "Thrown when an invalid exchange id is given",
+                                        "$ref": "#/components/schemas/ExchangeNotSupportedException"
+                                    },
+                                    {
+                                        "description": "Thrown when a pair is not found for the given blockchain or exchange",
+                                        "$ref": "#/components/schemas/PairNotFoundException"
+                                    }
+                                ]
                             }
                         }
                     }
@@ -374,12 +412,23 @@
                         }
                     },
                     "422": {
-                        "description": "Validation Error",
+                        "description": "Unprocessable Entity",
                         "content": {
                             "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
+                                "oneOf": [
+                                    {
+                                        "description": "Thrown when an invalid blockchain id is given",
+                                        "$ref": "#/components/schemas/BlockchainNotSupportedException"
+                                    },
+                                    {
+                                        "description": "Thrown when an invalid exchange id is given",
+                                        "$ref": "#/components/schemas/ExchangeNotSupportedException"
+                                    },
+                                    {
+                                        "description": "Thrown when a pair is not found for the given blockchain or exchange",
+                                        "$ref": "#/components/schemas/PairNotFoundException"
+                                    }
+                                ]
                             }
                         }
                     }
@@ -472,12 +521,23 @@
                         }
                     },
                     "422": {
-                        "description": "Validation Error",
+                        "description": "Unprocessable Entity",
                         "content": {
                             "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
+                                "oneOf": [
+                                    {
+                                        "description": "Thrown when an invalid blockchain id is given",
+                                        "$ref": "#/components/schemas/BlockchainNotSupportedException"
+                                    },
+                                    {
+                                        "description": "Thrown when an invalid exchange id is given",
+                                        "$ref": "#/components/schemas/ExchangeNotSupportedException"
+                                    },
+                                    {
+                                        "description": "Thrown when a pair is not found for the given blockchain or exchange",
+                                        "$ref": "#/components/schemas/PairNotFoundException"
+                                    }
+                                ]
                             }
                         }
                     }
@@ -529,11 +589,21 @@
                         }
                     },
                     "422": {
-                        "description": "Validation Error",
+                        "description": "Thrown when an invalid blockchain id is given",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                    "$ref": "#/components/schemas/BlockchainNotSupportedException"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Thrown when an invalid page number is given",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvalidPageException"
                                 }
                             }
                         }
@@ -587,11 +657,21 @@
                         }
                     },
                     "422": {
-                        "description": "Validation Error",
+                        "description": "Thrown when an invalid blockchain id is given",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                    "$ref": "#/components/schemas/BlockchainNotSupportedException"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Thrown when the given token is not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TokenNotFoundException"
                                 }
                             }
                         }
@@ -803,6 +883,31 @@
                     "explorer": "https://snowtrace.io/"
                 }
             },
+            "BlockchainNotSupportedException": {
+                "title": "BlockchainNotSupportedException",
+                "required": [
+                    "detail",
+                    "status_code"
+                ],
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "title": "Detail",
+                        "type": "string",
+                        "description": "The detailed message of the exception"
+                    },
+                    "status_code": {
+                        "title": "Status Code",
+                        "type": "integer",
+                        "description": "The status code of the exception"
+                    }
+                },
+                "description": "Thrown when an Invalid blockchain id is put during a call to the API.\n\nT get the list of valid blockchain ids, call `/blockchains`",
+                "example": {
+                    "detail": "Blockchain with id \"test\" is not supported. You can find a list of valid blockchain ids in /blockchains",
+                    "status_code": 422
+                }
+            },
             "Exchange": {
                 "title": "Exchange",
                 "required": [
@@ -840,6 +945,31 @@
                     "name": "Lydia Finance",
                     "url": "https://exchange.lydia.finance/#/swap",
                     "fee": 200
+                }
+            },
+            "ExchangeNotSupportedException": {
+                "title": "ExchangeNotSupportedException",
+                "required": [
+                    "detail",
+                    "status_code"
+                ],
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "title": "Detail",
+                        "type": "string",
+                        "description": "The detailed message of the exception"
+                    },
+                    "status_code": {
+                        "title": "Status Code",
+                        "type": "integer",
+                        "description": "The status code of the exception"
+                    }
+                },
+                "description": "Thrown when an Invalid exchange id is given during a call to the API.\n\nTo get the list of supported exchange ids, call `/exchanges`",
+                "example": {
+                    "detail": "Exchange with id \"test\" is not supported. You can get the list of valid exchange ids in /exchanges",
+                    "status_code": 422
                 }
             },
             "Exchanges": {
@@ -902,6 +1032,31 @@
                             "$ref": "#/components/schemas/ValidationError"
                         }
                     }
+                }
+            },
+            "InvalidPageException": {
+                "title": "InvalidPageException",
+                "required": [
+                    "detail",
+                    "status_code"
+                ],
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "title": "Detail",
+                        "type": "string",
+                        "description": "The detailed message of the exception"
+                    },
+                    "status_code": {
+                        "title": "Status Code",
+                        "type": "integer",
+                        "description": "The status code of the exception"
+                    }
+                },
+                "description": "Thrown when you given an invalid page index during calls to responses that\ngives paginated results.\n\nAn invalid page is:\n* A number lower or equal to 0\n* A page way too high\n\nYou should start with 1 as page, and then the response object will give you\nthe amount of pages available.",
+                "example": {
+                    "detail": "-2 is not a valid page number.",
+                    "status_code": 400
                 }
             },
             "Pair": {
@@ -1087,6 +1242,31 @@
                     "market_cap": 62609470.072472
                 }
             },
+            "TokenNotFoundException": {
+                "title": "TokenNotFoundException",
+                "required": [
+                    "detail",
+                    "status_code"
+                ],
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "title": "Detail",
+                        "type": "string",
+                        "description": "The detailed message of the exception"
+                    },
+                    "status_code": {
+                        "title": "Status Code",
+                        "type": "integer",
+                        "description": "The status code of the exception"
+                    }
+                },
+                "description": "Thrown when you try to get informations on a token that does not exist inside of our database.\n\nAt BlockchainAPIs, we only handle tokens that are inside of a liquidity pool.\n\nYou can get a list of all of the available tokens by calling `/tokens`",
+                "example": {
+                    "detail": "Token 0x8E870D67F660D95d5be530380D0eC0bd388289E1 not found for blockchain ethereum",
+                    "status_code": 404
+                }
+            },
             "Tokens": {
                 "title": "Tokens",
                 "required": [
@@ -1195,6 +1375,31 @@
                         "title": "Error Type",
                         "type": "string"
                     }
+                }
+            },
+            "PairNotFoundException": {
+                "title": "PairNotFoundException",
+                "description": "Thrown when you try to get some data about a pair that does not exist.\n\nTo avoid getting this error, you can get the list of available pairs for\nthe blockchain and exchange that you are interested in by calling `/exchanges/pairs`",
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "title": "Detail",
+                        "description": "The detailed message of the exception",
+                        "type": "string"
+                    },
+                    "status_code": {
+                        "title": "Status Code",
+                        "description": "The status code of the exception",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "detail",
+                    "status_code"
+                ],
+                "example": {
+                    "detail": "Pair 0x8E870D67F660D95d5be530380D0eC0bd388289E1->0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 not found in blockchain Arbitrum",
+                    "status_code": 422
                 }
             }
         }

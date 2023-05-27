@@ -70,6 +70,7 @@ class Property(PropertyRequired, PropertyOptional):
 Schema = TypedDict('Schema', {
     "title": str,
     "type": str,
+    "description": str,
     "properties": Dict[str, Property],
     "example": Dict[str, Any]
 })
