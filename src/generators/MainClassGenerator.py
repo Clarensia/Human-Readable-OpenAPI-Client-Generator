@@ -453,9 +453,16 @@ class {self._class_name}:
 
         return ret
 
+    def _test(self, lol: str | None = None):
+        """_summary_
+
+        :param lol: _description_, defaults to None
+        :type lol: str | None, optional
+        """
+
     def _get_func_param_desc(self, get: Get) -> str:
         ret = ""
-        if "parameter" in get:
+        if "parameters" in get:
             for param in get["parameters"]:
                 if param["required"]:
                     ret += f'        :param {param["name"]}: {param["description"]}\n'
@@ -463,8 +470,8 @@ class {self._class_name}:
 
             for param in get["parameters"]:
                 if not param["required"]:
-                    ret += f'        :param {param["name"]}: {param["description"]}\n'
-                    ret += f'        :type {param["name"]}: {convert_type(param["schema"]["type"])}\n'
+                    ret += f'        :param {param["name"]}: {param["description"]}, defaults to {"None" if "default" not in param["schema"] else param["schema"]["default"]}\n'
+                    ret += f'        :type {param["name"]}: {convert_type(param["schema"]["type"])}, Optional\n'
 
         return ret
 
