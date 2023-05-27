@@ -320,8 +320,41 @@ class MainClassGenerator:
 
         return ret
 
-    def _add_class_begining(self, infos: Info) -> str:
-        return f'''
+    def _match_error_type(self, exceptions: List[str]) -> str:
+        ret = '                match error_type:\n'
+        for exception in exceptions:
+            ret += f'                    case "{exception}":\n'
+            ret += f'                        raise {exception}(response.status, error_data["detail"]["detail"])\n'
+        ret += "                    case unknown:\n"
+        ret += '                        raise Exception(f"Unkwnown Exception type: {unkwown}.\nGot this exception while handling:\n{error_data} with status code: {response.status}")\n'
+        return ret
+
+    def _add_do_request_method(self, exceptions: List[str]) -> str:
+        ret = f'''
+    async def _do_request(self, path: str, params: Dict[str, Any] | None = None) -> Dict[str, None]:
+        """Make raw API requests (that return the json result).
+        
+        This method additionaly adds the user API key to the request if it is present.
+
+        :param path: The path to the request
+        :type path: str
+        :param params: The optional query parameters of the request, defaults to None
+        :type params: Dict[str, Any] | None, optional
+        :return: The json-formated result
+        :rtype: Dict[str, None]
+        """
+        async with self._session.get(path, params=params, headers=self._headers) as response:
+            if response.status != 200:
+                error_data = await response.json()
+                error_type = error_data["detail"]["error_type"]
+'''
+        ret += self._match_error_type(exceptions)
+        ret += "\n"
+        ret += '            return await response.json()\n'
+        return ret        
+
+    def _add_class_begining(self, infos: Info, exceptions: List[str]) -> str:
+        ret = f'''
 class {self._class_name}:
     """{infos["title"]}
 
@@ -371,22 +404,9 @@ class {self._class_name}:
         working with BlockchainAPIs.
         """
         await self._session.close()
-
-    async def _do_request(self, path: str, params: Dict[str, Any] | None = None) -> Dict[str, None]:
-        """Make raw API requests (that return the json result).
-        
-        This method additionaly adds the user API key to the request if it is present.
-
-        :param path: The path to the request
-        :type path: str
-        :param params: The optional query parameters of the request, defaults to None
-        :type params: Dict[str, Any] | None, optional
-        :return: The json-formated result
-        :rtype: Dict[str, None]
-        """
-        async with self._session.get(path, params=params, headers=self._headers) as response:
-            return await response.json()
 '''
+        ret += self._add_do_request_method(exceptions)
+        return ret
 
     def _get_method_name(self, path: str) -> str:
         splited = path.split('/')
@@ -693,5 +713,5 @@ class {self._class_name}:
         for path in open_api_file["paths"]:
             main_class_text += self._add_method(path, open_api_file["paths"][path], open_api_file["components"]["schemas"])
             main_class_text += "\n"
-        
+
         self._write_main_class(main_class_text)
