@@ -326,7 +326,7 @@ class MainClassGenerator:
             ret += f'                    case "{exception}":\n'
             ret += f'                        raise {exception}(response.status, error_data["detail"]["detail"])\n'
         ret += "                    case unknown:\n"
-        ret += '                        raise Exception(f"Unkwnown Exception type: {unkwown}.\nGot this exception while handling:\n{error_data} with status code: {response.status}")\n'
+        ret += '                        raise Exception(f"Unkwnown Exception type: {unknown}.\\nGot this exception while handling:\\n{error_data} with status code: {response.status}")\\n'
         return ret
 
     def _add_do_request_method(self, exceptions: List[str]) -> str:
