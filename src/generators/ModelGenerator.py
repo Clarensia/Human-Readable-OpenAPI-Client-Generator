@@ -3,7 +3,7 @@ import os
 
 from typing import Any, Dict, List
 
-from src.generators.generator_types import ExceptionExample, Property, Schema
+from src.generators.generator_types import Property, Schema
 
 
 class ModelGenerator:
