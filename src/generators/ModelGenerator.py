@@ -356,7 +356,7 @@ class {exception_name}({main_class_name}):
     status_code: str
     """The error code returned by the call to the API
     
-    For example: {schema["example"]["error_code"]}
+    For example: {schema["example"]["status_code"]}
     """
 
 '''
