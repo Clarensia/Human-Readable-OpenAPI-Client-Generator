@@ -303,7 +303,7 @@ class MainClassGenerator:
                 raise Exception(f"Not 'item' nor '$ref' in current returned schema: {returned_schema}")
         return ret                
 
-    def _add_necessary_imports(self, paths: Dict[str, OpenAPIPath], all_schema: Dict[str, Schema]) -> str:
+    def _add_necessary_imports(self, paths: Dict[str, OpenAPIPath], all_schema: Dict[str, Schema], exceptions: List[str]) -> str:
         ret = ""
         if self._has_list(paths):
             ret += "from typing import Any, Dict, List\n"
@@ -314,6 +314,9 @@ class MainClassGenerator:
         models_to_import = self._get_models_to_import(paths, all_schema)
         for model in models_to_import:
             ret += f"from models.{model} import {model}\n"
+
+        for exception in exceptions:
+            ret += f"from exceptions.{exception} import {exception}\n"
 
         return ret
 
@@ -670,9 +673,20 @@ class {self._class_name}:
         with open(os.path.join(self._result_folder, f"{self._class_name}.py"), "w+") as f:
             f.write(to_write)
 
+    def _get_list_of_exceptions(self, schemas: Dict[str, Schema]) -> List[str]:
+        """Get the list of each exception that we can possibly throw
+
+        :param schemas: The dictionary containing as key the schema name and as value its implementation
+        :type schemas: Dict[str, Schema]
+        :return: The list of the exception schema names
+        :rtype: List[str]
+        """
+        return [schema_name for schema_name in schemas if "Exception" in schema_name]
+
     def generate_main_class(self, open_api_file: OpenAPI):
         main_class_text = ""
-        main_class_text += self._add_necessary_imports(open_api_file["paths"], open_api_file["components"]["schemas"])
+        exception_names = self._get_list_of_exceptions(open_api_file["components"]["schemas"])
+        main_class_text += self._add_necessary_imports(open_api_file["paths"], open_api_file["components"]["schemas"], exception_names)
         main_class_text += "\n\n"
         main_class_text += self._add_class_begining(open_api_file["info"])
         main_class_text += "\n"
