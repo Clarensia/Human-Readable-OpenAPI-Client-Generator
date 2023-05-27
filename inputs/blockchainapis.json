@@ -902,7 +902,7 @@
                         "description": "The status code of the exception"
                     }
                 },
-                "description": "Thrown when an Invalid blockchain id is put during a call to the API.\n\nT get the list of valid blockchain ids, call `/blockchains`",
+                "description": "Thrown when an Invalid blockchain id is put during a call to the API.\n\nTo get the list of valid blockchain ids, call `/blockchains`",
                 "example": {
                     "detail": "Blockchain with id \"test\" is not supported. You can find a list of valid blockchain ids in /blockchains",
                     "status_code": 422

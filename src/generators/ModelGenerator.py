@@ -324,8 +324,7 @@ from exceptions.{main_class_name} import {main_class_name}
 
 class {exception_name}({main_class_name}):
     """
-{add_indent(description, 4)}
-    """
+{add_indent(description, 4)}    """
 
 '''
 
