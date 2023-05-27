@@ -3,6 +3,7 @@ import os
 
 from typing import Any, Dict, List
 
+from src.utils import add_indent
 from src.generators.generator_types import Property, Schema
 
 
@@ -323,7 +324,7 @@ from exceptions.{main_class_name} import {main_class_name}
 
 class {exception_name}({main_class_name}):
     """
-    {description}
+{add_indent(description, 4)}
     """
 
 '''
