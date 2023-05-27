@@ -75,7 +75,7 @@
                         }
                     },
                     "422": {
-                        "description": "Thrown when an invalid blockchain id is given",
+                        "description": "When an invalid blockchain id is given",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -85,7 +85,7 @@
                         }
                     },
                     "400": {
-                        "description": "Thrown when an invalid page is given",
+                        "description": "When an invalid page is given",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -204,11 +204,11 @@
                             "application/json": {
                                 "oneOf": [
                                     {
-                                        "description": "Thrown when an invalid blockchain id is given",
+                                        "description": "When an invalid blockchain id is given",
                                         "$ref": "#/components/schemas/BlockchainNotSupportedException"
                                     },
                                     {
-                                        "description": "Thrown when an invalid Exchange id is given",
+                                        "description": "When an invalid Exchange id is given",
                                         "$ref": "#/components/schemas/ExchangeNotSupportedException"
                                     }
                                 ]
@@ -216,7 +216,7 @@
                         }
                     },
                     "400": {
-                        "description": "Thrown when you give an invalid page number",
+                        "description": "When you give an invalid page number",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -308,15 +308,15 @@
                             "application/json": {
                                 "oneOf": [
                                     {
-                                        "description": "Thrown when an invalid blockchain id is given",
+                                        "description": "When an invalid blockchain id is given",
                                         "$ref": "#/components/schemas/BlockchainNotSupportedException"
                                     },
                                     {
-                                        "description": "Thrown when an invalid exchange id is given",
+                                        "description": "When an invalid exchange id is given",
                                         "$ref": "#/components/schemas/ExchangeNotSupportedException"
                                     },
                                     {
-                                        "description": "Thrown when a pair is not found for the given blockchain or exchange",
+                                        "description": "When a pair is not found for the given blockchain or exchange",
                                         "$ref": "#/components/schemas/PairNotFoundException"
                                     }
                                 ]
@@ -417,15 +417,15 @@
                             "application/json": {
                                 "oneOf": [
                                     {
-                                        "description": "Thrown when an invalid blockchain id is given",
+                                        "description": "When an invalid blockchain id is given",
                                         "$ref": "#/components/schemas/BlockchainNotSupportedException"
                                     },
                                     {
-                                        "description": "Thrown when an invalid exchange id is given",
+                                        "description": "When an invalid exchange id is given",
                                         "$ref": "#/components/schemas/ExchangeNotSupportedException"
                                     },
                                     {
-                                        "description": "Thrown when a pair is not found for the given blockchain or exchange",
+                                        "description": "When a pair is not found for the given blockchain or exchange",
                                         "$ref": "#/components/schemas/PairNotFoundException"
                                     }
                                 ]
@@ -526,15 +526,15 @@
                             "application/json": {
                                 "oneOf": [
                                     {
-                                        "description": "Thrown when an invalid blockchain id is given",
+                                        "description": "When an invalid blockchain id is given",
                                         "$ref": "#/components/schemas/BlockchainNotSupportedException"
                                     },
                                     {
-                                        "description": "Thrown when an invalid exchange id is given",
+                                        "description": "When an invalid exchange id is given",
                                         "$ref": "#/components/schemas/ExchangeNotSupportedException"
                                     },
                                     {
-                                        "description": "Thrown when a pair is not found for the given blockchain or exchange",
+                                        "description": "When a pair is not found for the given blockchain or exchange",
                                         "$ref": "#/components/schemas/PairNotFoundException"
                                     }
                                 ]
@@ -589,7 +589,7 @@
                         }
                     },
                     "422": {
-                        "description": "Thrown when an invalid blockchain id is given",
+                        "description": "When an invalid blockchain id is given",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -599,7 +599,7 @@
                         }
                     },
                     "400": {
-                        "description": "Thrown when an invalid page number is given",
+                        "description": "When an invalid page number is given",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -657,7 +657,7 @@
                         }
                     },
                     "422": {
-                        "description": "Thrown when an invalid blockchain id is given",
+                        "description": "When an invalid blockchain id is given",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -667,7 +667,7 @@
                         }
                     },
                     "404": {
-                        "description": "Thrown when the given token is not found",
+                        "description": "When the given token is not found",
                         "content": {
                             "application/json": {
                                 "schema": {
