@@ -1,8 +1,9 @@
+import json
 import os
 
 from typing import Dict
 
-from src.utils import get_method_name
+from src.utils import add_indent, get_method_name
 from src.generators.generator_types import Get, OpenAPIPath
 
 
@@ -112,8 +113,73 @@ API_KEY = "<Your api key here>"
         self._write_test("config.py", to_write)
         self._write_test("secret_config.py", to_write)
 
+    def _get_class_begining(self, method_name: str) -> str:
+        helper_name = f"{self._api_name}Tester"
+        return f'''
+from dataclasses import asdict
+
+from {helper_name} import {helper_name}
+
+class Test{method_name.capitalize()}({helper_name}):
+    """
+    Test for the method {method_name} of {self._api_name}
+    """
+
+    async def test_{method_name}(self):
+'''
+
+    def _get_params_with_example(self, get: Get) -> Dict[str, str | int]:
+        """Allow us to get the query parameter with their example
+        from the given get object
+
+        :param get: The get object
+        :type get: Get
+        :return: The parameter with their example values
+        :rtype: Dict[str, str | int]
+        """
+        # TODO: Create multiple examples with default values and not
+        ret = {}
+        for parameter in get["parameters"]:
+            if "example" in parameter:
+                ret[parameter["name"]] = parameter["example"]
+            else:
+                ret[parameter["name"]] = parameter["schema"]["default"]
+
+        return ret
+
+    def _format_example(self, example: str | int) -> str:
+        if type(example) == int:
+            return example
+        else:
+            return f'"{example}"'
+
+    def _add_examples_to_method_call(self, examples: Dict[str, str | int]) -> str:
+        ret = ""
+        is_first = True
+        for example_key in examples:
+            if not is_first:
+                ret += ", "
+            else:
+                is_first = True
+            
+            ret += f'{example_key}: {self._format_example(example_key)}'
+ 
+        return ret
+
+    def _format_params_api_call(self, examples: Dict[str, str | int]) -> str:
+        return add_indent(json.dumps(examples, indent=4), 8)
+
     def _add_test_for_route(self, route_path: str, get: Get):
         method_name = get_method_name(route_path)
+        params_examples = self._get_params_with_example(get)
+        ret = self._get_class_begining(method_name)
+        if params_examples == {}:
+            ret += f'        api_result = await self.api.{method_name}()\n'
+            ret += f'        api_call = await self.do_request("{route_path}")\n'
+        else:
+            ret += f'        api_result = await self.api.{method_name}({self._add_examples_to_method_call(params_examples)})\n'
+            ret += f'        api_call = await self.do_request("{route_path}", params={self._format_params_api_call(params_examples)})\n'    
+        ret += '        self.assertEqual(asdict(api_result), api_call)\n'
 
     def generate_tests(self, routes: Dict[str, OpenAPIPath]):
         """Generate all of the test files for the API
@@ -125,4 +191,3 @@ API_KEY = "<Your api key here>"
         self._generate_config_files()
         for route in routes:
             self._add_test_for_route(route, routes[route]["get"])
-
