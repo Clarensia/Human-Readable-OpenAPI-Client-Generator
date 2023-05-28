@@ -59,6 +59,7 @@
                             "type": "string",
                             "description": "The blockchain from which you want to get the exchanges"
                         },
+                        "example": "ethereum",
                         "name": "blockchain",
                         "in": "query"
                     }
@@ -114,6 +115,7 @@
                             "type": "string",
                             "description": "The exchange to get the informations from"
                         },
+                        "example": "uniswapv2_ethereum",
                         "name": "exchange",
                         "in": "query"
                     }
@@ -171,6 +173,7 @@
                             "description": "The blockchain from which you want to get the pairs",
                             "max_size": 16
                         },
+                        "example": "ethereum",
                         "name": "blockchain",
                         "in": "query"
                     },
@@ -183,6 +186,7 @@
                             "type": "string",
                             "description": "The exchange from which you want to get the pairs"
                         },
+                        "example": "uniswapv2_ethereum",
                         "name": "exchange",
                         "in": "query"
                     }
@@ -245,6 +249,7 @@
                             "type": "string",
                             "description": "The id of the blockchain on which the exchange will happen. It is required because some tokens can have same address accross multiple blockchains"
                         },
+                        "example": "ethereum",
                         "name": "blockchain",
                         "in": "query"
                     },
@@ -257,6 +262,7 @@
                             "type": "string",
                             "description": "The id of the exchange from which you want to get the reserve"
                         },
+                        "example": "uniswapv2_ethereum",
                         "name": "exchange",
                         "in": "query"
                     },
@@ -270,6 +276,7 @@
                             "type": "string",
                             "description": "The address of the first token of the pair"
                         },
+                        "example": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
                         "name": "token0",
                         "in": "query"
                     },
@@ -283,6 +290,7 @@
                             "type": "string",
                             "description": "The address of the second token of the pair"
                         },
+                        "example": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
                         "name": "token1",
                         "in": "query"
                     }
@@ -343,6 +351,7 @@
                             "type": "string",
                             "description": "The id of the blockchain on which this exchange take place"
                         },
+                        "example": "ethereum",
                         "name": "blockchain",
                         "in": "query"
                     },
@@ -356,6 +365,7 @@
                             "type": "string",
                             "description": "The address of the token that you sell"
                         },
+                        "example": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
                         "name": "tokenIn",
                         "in": "query"
                     },
@@ -369,6 +379,7 @@
                             "type": "string",
                             "description": "The address of the token that you buy"
                         },
+                        "example": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
                         "name": "tokenOut",
                         "in": "query"
                     },
@@ -380,6 +391,7 @@
                             "type": "integer",
                             "description": "The amount of token0 that you sell"
                         },
+                        "example": 1000000000000000000,
                         "name": "amountIn",
                         "in": "query"
                     },
@@ -392,6 +404,7 @@
                             "type": "string",
                             "description": "The exchange on which you want to do the trade"
                         },
+                        "example": "uniswapv2_ethereum",
                         "name": "exchange",
                         "in": "query"
                     }
@@ -452,6 +465,7 @@
                             "type": "string",
                             "description": "The id of the blockchain on which this exchange take place"
                         },
+                        "example": "ethereum",
                         "name": "blockchain",
                         "in": "query"
                     },
@@ -465,6 +479,7 @@
                             "type": "string",
                             "description": "The address of the token that you sell"
                         },
+                        "example": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
                         "name": "tokenIn",
                         "in": "query"
                     },
@@ -478,6 +493,7 @@
                             "type": "string",
                             "description": "The address of the token that you buy"
                         },
+                        "example": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
                         "name": "tokenOut",
                         "in": "query"
                     },
@@ -489,6 +505,7 @@
                             "type": "integer",
                             "description": "The amount of token1 that you are trying to get"
                         },
+                        "example": 1000000000000000000,
                         "name": "amountOut",
                         "in": "query"
                     },
@@ -501,6 +518,7 @@
                             "type": "string",
                             "description": "The exchange on which you want to do the trade"
                         },
+                        "example": "uniswapv2_ethereum",
                         "name": "exchange",
                         "in": "query"
                     }
@@ -573,6 +591,7 @@
                             "type": "string",
                             "description": "The blockchain on which you want to get the tokens"
                         },
+                        "example": "ethereum",
                         "name": "blockchain",
                         "in": "query"
                     }
@@ -628,6 +647,7 @@
                             "type": "string",
                             "description": "The blockchain on which you want to get the information of the token"
                         },
+                        "example": "ethereum",
                         "name": "blockchain",
                         "in": "query"
                     },
@@ -641,6 +661,7 @@
                             "type": "string",
                             "description": "The address of the token that you want to get the informations from"
                         },
+                        "example": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
                         "name": "token",
                         "in": "query"
                     }
@@ -696,6 +717,7 @@
                             "type": "string",
                             "description": "The id of the blockchain of the token"
                         },
+                        "example": "ethereum",
                         "name": "blockchain",
                         "in": "query"
                     },
@@ -709,6 +731,7 @@
                             "type": "string",
                             "description": "The address of the token that you want to get the decimals from"
                         },
+                        "example": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
                         "name": "token",
                         "in": "query"
                     }

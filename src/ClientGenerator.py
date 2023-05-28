@@ -11,6 +11,7 @@ from src.ConfigType import ConfigType
 from src.generators.create_requirements import create_requirements
 from src.generators.MainClassGenerator import MainClassGenerator
 from src.generators.ModelGenerator import ModelGenerator
+from src.generators.TestGenerator import TestGenerator
 
 from src.generators.generator_types import Schema
 
@@ -50,11 +51,17 @@ class ClientGenerator:
     _exceptions_folder: str
     """The path to the folder that will contain the exceptions"""
     
+    _test_folder: str
+    """The path to the folder containing tests for the API"""
+    
     _main_class_generator: MainClassGenerator
     """The class that allow us to generate the main class"""
     
     _model_generator: ModelGenerator
     """The class that allow us to generate the models"""
+    
+    _test_generator: TestGenerator
+    """The class that allow us to generate the tests"""
     
     def __init__(self, arguments: Namespace):
         self._verify_args(arguments)
@@ -63,9 +70,11 @@ class ClientGenerator:
         self._dest_folder = arguments.dest
         self._models_folder = os.path.join(self._dest_folder, "models")
         self._exceptions_folder = os.path.join(self._dest_folder, "exceptions")
+        self._test_folder = os.path.join(self._dest_folder, "tests")
         config_parsed = _parse_config(config_file)
         self._main_class_generator = MainClassGenerator(config_parsed["name"], config_parsed["api-url"], self._dest_folder)
         self._model_generator = ModelGenerator(config_parsed["name"], self._models_folder, self._exceptions_folder)
+        self._test_generator = TestGenerator(self._test_folder)
 
     def _verify_args(self, arguments: Namespace):
         """Verify if the arguments are correct. It prints an error if the arguments
