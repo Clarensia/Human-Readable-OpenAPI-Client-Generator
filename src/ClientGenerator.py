@@ -120,6 +120,7 @@ class ClientGenerator:
 
         os.mkdir(self._models_folder)
         os.mkdir(self._exceptions_folder)
+        os.mkdir(self._test_folder)
 
     def create_client(self):
         """Generate the python client from the arguments given

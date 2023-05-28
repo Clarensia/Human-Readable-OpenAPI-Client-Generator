@@ -29,7 +29,7 @@ class TestGenerator:
         self._test_folder = test_folder
 
     def _write_test(self, test_file: str, text: str):
-        with open(os.path.join(self._test_folder, test_file), "w+") as f:
+        with open(os.path.join(self._test_folder, test_file + ".py"), "w+") as f:
             f.write(text)
 
     def _generate_helper_file(self):
