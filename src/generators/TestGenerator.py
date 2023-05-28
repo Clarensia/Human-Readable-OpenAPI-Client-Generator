@@ -138,6 +138,8 @@ class Test{method_name.capitalize()}({helper_name}):
         :rtype: Dict[str, str | int]
         """
         # TODO: Create multiple examples with default values and not
+        if "parameters" not in get:
+            return {}
         ret = {}
         for parameter in get["parameters"]:
             if "example" in parameter:
