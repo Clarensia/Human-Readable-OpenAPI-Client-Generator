@@ -110,8 +110,8 @@ class {helper_name}(IsolatedAsyncioTestCase):
 # do so, to prevent pushing the file by accident
 API_KEY = "<Your api key here>"
 '''
-        self._write_test("config.py", to_write)
-        self._write_test("secret_config.py", to_write)
+        self._write_test("config", to_write)
+        self._write_test("secret_config", to_write)
 
     def _get_class_begining(self, method_name: str) -> str:
         helper_name = f"{self._api_name}Tester"
