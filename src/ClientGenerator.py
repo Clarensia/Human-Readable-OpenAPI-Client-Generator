@@ -9,6 +9,7 @@ from typing import Dict
 
 from src.ConfigType import ConfigType
 from src.generators.create_requirements import create_requirements
+from src.generators.create_gitignore import create_gitignore
 from src.generators.MainClassGenerator import MainClassGenerator
 from src.generators.ModelGenerator import ModelGenerator
 from src.generators.TestGenerator import TestGenerator
@@ -127,6 +128,8 @@ class ClientGenerator:
             open_api_file = json.load(f)
         self._init_dest_folder()
         create_requirements(self._dest_folder)
+        create_gitignore(self._dest_folder)
         self._main_class_generator.generate_main_class(open_api_file)
         schemas: Dict[str, Schema] = open_api_file["components"]["schemas"]
         self._model_generator.build_models(schemas)
+        self._test_generator.generate_tests(open_api_file["paths"])
