@@ -2,6 +2,7 @@ import os
 
 from typing import Dict
 
+from src.utils import get_method_name
 from src.generators.generator_types import Get, OpenAPIPath
 
 
@@ -98,10 +99,21 @@ class {helper_name}(IsolatedAsyncioTestCase):
 '''
         self._write_test(helper_name, to_write)
 
-    def _add_test_for_route(self, route_path: str, get: Get):
-        pass
 
-    def _generate_config_files(self, )
+    def _generate_config_files(self):
+        to_write = '''
+# Fill this file with your config and rename it secret_config.yml
+
+# Write your api key here.
+# Don't forget to rename the file to secret_config.py before you
+# do so, to prevent pushing the file by accident
+API_KEY = "<Your api key here>"
+'''
+        self._write_test("config.py", to_write)
+        self._write_test("secret_config.py", to_write)
+
+    def _add_test_for_route(self, route_path: str, get: Get):
+        method_name = get_method_name(route_path)
 
     def generate_tests(self, routes: Dict[str, OpenAPIPath]):
         """Generate all of the test files for the API

@@ -45,6 +45,28 @@ def extract_schema_name_from_ref(ref: str) -> str:
     """
     return ref.split("/")[-1]
 
+def get_method_name(path: str) -> str:
+    """Get the name of the given method from the path.
+    
+    It simply, split the path by the '/' character and then returns:
+    - splited[-1] if the path did not end up by a '/'
+    - splited[-2] if the path did end by a '/'
+
+    :param path: The path to the function
+    :type path: str
+    :return: The name of the function.
+    
+    For example:
+    path: /v0/blockchains/
+    will return: blockchains
+    :rtype: str
+    """
+    splited = path.split('/')
+    if splited[-1] == "":
+        return splited[-2]
+    else:
+        return splited[-1]
+
 def add_indent(text: str, indent: int, except_first_line: bool = False) -> str:
     """Add indent spaces after each new lines of text
 

@@ -2,7 +2,7 @@ import json
 import os
 from typing import Any, Dict, List, Tuple
 
-from src.utils import add_indent, convert_type, extract_schema_name_from_ref, is_native_python_type
+from src.utils import add_indent, convert_type, extract_schema_name_from_ref, get_method_name, is_native_python_type
 from src.generators.generator_types import FuncParam, Get, Info, OpenAPI, OpenAPIPath, Property, Schema
 
 
@@ -408,13 +408,6 @@ class {self._class_name}:
         ret += self._add_do_request_method(exceptions)
         return ret
 
-    def _get_method_name(self, path: str) -> str:
-        splited = path.split('/')
-        if splited[-1] == "":
-            return splited[-2]
-        else:
-            return splited[-1]
-
     def _get_func_param_with_default(self, param: FuncParam) -> str:
         """Get the function parameters with the default value
         
@@ -452,13 +445,6 @@ class {self._class_name}:
                     ret += self._get_func_param_with_default(param)
 
         return ret
-
-    def _test(self, lol: str | None = None):
-        """_summary_
-
-        :param lol: _description_, defaults to None
-        :type lol: str | None, optional
-        """
 
     def _get_func_param_desc(self, get: Get) -> str:
         ret = ""
@@ -707,7 +693,7 @@ class {self._class_name}:
 
     def _add_method(self, path: str, path_object: OpenAPIPath, schema: Dict[str, Schema]) -> str:
         get = path_object["get"]
-        method_name = self._get_method_name(path)
+        method_name = get_method_name(path)
         ret = f"    async def {method_name}(self{self._get_func_params(get)}):\n"
         ret += self._get_function_description(get, schema)
         ret += self._get_function_implementation(path, get, schema)
