@@ -120,7 +120,7 @@ from dataclasses import asdict
 
 from {helper_name} import {helper_name}
 
-class Test{method_name.capitalize()}({helper_name}):
+class Test{method_name[0].upper() + method_name[1:]}({helper_name}):
     """
     Test for the method {method_name} of {self._api_name}
     """
