@@ -65,7 +65,7 @@ class {helper_name}(IsolatedAsyncioTestCase):
         super().__init__(*args, **kwargs)
         self._api_key = API_KEY
         self.api = None
-        self._session = none
+        self._session = None
     
     async def asyncSetUp(self):
         """Setup the api instance.
@@ -94,7 +94,7 @@ class {helper_name}(IsolatedAsyncioTestCase):
                  This result should be compared with the one returned by the SDK.
         :rtype: Any
         """
-        async with self.session.get(url, params=params, headers={{"api-key": self._api_key}}) as response:
+        async with self._session.get(url, params=params, headers={{"api-key": self._api_key}}) as response:
             return await response.json()
 
 '''
@@ -182,6 +182,7 @@ class Test{method_name.capitalize()}({helper_name}):
             ret += f'        api_result = await self.api.{method_name}({self._add_examples_to_method_call(params_examples)})\n'
             ret += f'        api_call = await self.do_request("{route_path}", params={self._format_params_api_call(params_examples)})\n'    
         ret += '        self.assertEqual(asdict(api_result), api_call)\n'
+        self._write_test(f"test_{method_name}", ret)
 
     def generate_tests(self, routes: Dict[str, OpenAPIPath]):
         """Generate all of the test files for the API
