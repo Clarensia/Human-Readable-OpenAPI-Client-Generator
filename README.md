@@ -21,4 +21,6 @@ The generated client will be very simple, for example in Python:
 It will use Async features and be documented using sphinx for Python. This way a Documentation
 can easily be generated from the SDK created.
 
+## TODO
 
+- [ ] Rename methods to snake_case
