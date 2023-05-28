@@ -162,14 +162,17 @@ class Test{method_name.capitalize()}({helper_name}):
             if not is_first:
                 ret += ", "
             else:
-                is_first = True
+                is_first = False
             
-            ret += f'{example_key}: {self._format_example(example_key)}'
+            ret += f'{example_key}={self._format_example(example_key)}'
  
         return ret
 
     def _format_params_api_call(self, examples: Dict[str, str | int]) -> str:
-        return add_indent(json.dumps(examples, indent=4), 8)
+        ret = add_indent(json.dumps(examples, indent=4), 8, True)
+        # remove latest line and replace it by a ')'
+        parts = ret.rsplit('\n', 1)
+        return ')'.join(parts)
 
     def _add_test_for_route(self, route_path: str, get: Get):
         method_name = get_method_name(route_path)
@@ -180,7 +183,8 @@ class Test{method_name.capitalize()}({helper_name}):
             ret += f'        api_call = await self.do_request("{route_path}")\n'
         else:
             ret += f'        api_result = await self.api.{method_name}({self._add_examples_to_method_call(params_examples)})\n'
-            ret += f'        api_call = await self.do_request("{route_path}", params={self._format_params_api_call(params_examples)})\n'    
+            # We ommit the ')' here because it is added by _format_params_api_call
+            ret += f'        api_call = await self.do_request("{route_path}", params={self._format_params_api_call(params_examples)}\n'    
         ret += '        self.assertEqual(asdict(api_result), api_call)\n'
         self._write_test(f"test_{method_name}", ret)
 
