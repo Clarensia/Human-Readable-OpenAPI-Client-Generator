@@ -124,18 +124,20 @@ class Test{method_name[0].upper() + method_name[1:]}({helper_name}):
     """
     Test for the method {method_name} of {self._api_name}
     """
-
-    async def test_{method_name}(self):
 '''
 
-    def _get_params_with_example(self, get: Get) -> Dict[str, str | int]:
+    def _get_all_params_with_example(self, get: Get) -> Dict[str, Dict[str, str | int]]:
         """Allow us to get the query parameter with their example
-        from the given get object
+        from the given get object.
+        
+        It will get all possible combination.
+        
+        Like when a value is optional, it will try to call it without.
 
         :param get: The get object
         :type get: Get
-        :return: The parameter with their example values
-        :rtype: Dict[str, str | int]
+        :return: As key the name of the function and as value the parameters with their value
+        :rtype: Dict[Dict[str, str | int]]
         """
         # TODO: Create multiple examples with default values and not
         if "parameters" not in get:
@@ -197,23 +199,28 @@ class Test{method_name[0].upper() + method_name[1:]}({helper_name}):
         return "type" in ret_schema and (ret_schema["type"] == "integer"\
             or ret_schema["type"] == "string")
 
-    def _add_test_for_route(self, route_path: str, get: Get):
+    def _add_tests_for_route(self, route_path: str, get: Get):
         method_name = get_method_name(route_path)
+        all_params = self._get_all_params_with_examples(get)
         params_examples = self._get_params_with_example(get)
-        ret = self._get_class_begining(method_name)
-        if params_examples == {}:
-            ret += f'        api_result = await self.api.{method_name}()\n'
-            ret += f'        api_call = await self.do_request("{route_path}")\n'
-        else:
-            ret += f'        api_result = await self.api.{method_name}({self._add_examples_to_method_call(params_examples)})\n'
-            # We ommit the ')' here because it is added by _format_params_api_call
-            ret += f'        api_call = await self.do_request("{route_path}", params={self._format_params_api_call(params_examples)}\n'
-        if self._is_response_list(get):
-            ret += '        self.assertListEqual([asdict(r) for r in api_result], api_call)\n'
-        elif self._is_response_python_type(get):
-            ret += '        self.assertEqual(api_result, api_call)\n'
-        else:
-            ret += '        self.assertDictEqual(asdict(api_result), api_call)\n'
+        ret = self._get_class_begining(method_name, param_name)
+        for param_name in all_params:
+            params_examples = all_params[param_name]
+            ret += "\n"
+            ret += f'    async def test_{method_name}_{param_name}(self):'
+            if params_examples == {}:
+                ret += f'        api_result = await self.api.{method_name}()\n'
+                ret += f'        api_call = await self.do_request("{route_path}")\n'
+            else:
+                ret += f'        api_result = await self.api.{method_name}({self._add_examples_to_method_call(params_examples)})\n'
+                # We ommit the ')' here because it is added by _format_params_api_call
+                ret += f'        api_call = await self.do_request("{route_path}", params={self._format_params_api_call(params_examples)}\n'
+            if self._is_response_list(get):
+                ret += '        self.assertListEqual([asdict(r) for r in api_result], api_call)\n'
+            elif self._is_response_python_type(get):
+                ret += '        self.assertEqual(api_result, api_call)\n'
+            else:
+                ret += '        self.assertDictEqual(asdict(api_result), api_call)\n'
         self._write_test(f"test_{method_name}", ret)
 
     def generate_tests(self, routes: Dict[str, OpenAPIPath]):
@@ -225,4 +232,4 @@ class Test{method_name[0].upper() + method_name[1:]}({helper_name}):
         self._generate_helper_file()
         self._generate_config_files()
         for route in routes:
-            self._add_test_for_route(route, routes[route]["get"])
+            self._add_tests_for_route(route, routes[route]["get"])
