@@ -1,4 +1,4 @@
-from src.generators.generator_types import Schema
+import re
 
 
 def convert_type(give_type: str) -> str:
@@ -52,6 +52,8 @@ def get_method_name(path: str) -> str:
     - splited[-1] if the path did not end up by a '/'
     - splited[-2] if the path did end by a '/'
 
+    Then it also convert the method name to camel_case
+
     :param path: The path to the function
     :type path: str
     :return: The name of the function.
@@ -63,9 +65,11 @@ def get_method_name(path: str) -> str:
     """
     splited = path.split('/')
     if splited[-1] == "":
-        return splited[-2]
+        ret = splited[-2]
     else:
-        return splited[-1]
+        ret = splited[-1]
+    ret = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', ret)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', ret).lower()
 
 def add_indent(text: str, indent: int, except_first_line: bool = False) -> str:
     """Add indent spaces after each new lines of text
