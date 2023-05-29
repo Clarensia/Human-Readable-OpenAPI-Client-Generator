@@ -270,7 +270,7 @@ class Test{method_name[0].upper() + method_name[1:]}({helper_name}):
         for param_name in all_params:
             params_examples = all_params[param_name]
             ret += "\n"
-            ret += f'    async def test_{method_name}_{param_name}(self):'
+            ret += f'    async def test_{method_name}_{param_name}(self):\n'
             if params_examples == {}:
                 ret += f'        api_result = await self.api.{method_name}()\n'
                 ret += f'        api_call = await self.do_request("{route_path}")\n'
