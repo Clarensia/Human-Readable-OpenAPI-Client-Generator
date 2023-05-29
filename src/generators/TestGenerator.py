@@ -1,7 +1,8 @@
 import json
 import os
 
-from typing import Dict
+from typing import Dict, List
+from itertools import combinations
 
 from src.utils import add_indent, get_method_name
 from src.generators.generator_types import Get, OpenAPIPath
@@ -126,6 +127,63 @@ class Test{method_name[0].upper() + method_name[1:]}({helper_name}):
     """
 '''
 
+    def _get_all_optional_parameters(self, get: Get) -> Dict[str, str | int]:
+        """Get all of the optional parameters
+
+        :param get: The get of the path
+        :type get: Get
+        :return: The optional parameter as key and as value its example/default value
+        :rtype: Dict[str, str | int]
+        """
+        all_params = {}
+        for parameter in get["parameters"]:
+            if not parameter["required"]:
+                if "example" in parameter:
+                    all_params[parameter["name"]] = parameter["example"]
+                else:
+                    all_params[parameter["name"]] = parameter["schema"]["default"]
+                    
+        return all_params
+
+    def _get_all_combinations(self, all_options: Dict[str, str | int]) -> List[Dict[str, str | int]]:
+        """Get the combination of all of the key-value possible
+
+        :param all_options: The options that we have
+        :type all_options: Dict[str, str  |  int]
+        :return: All possible dictionaries
+        
+        For example, the following input:
+        {
+            "k1": "v1",
+            "k2": "v2"
+        }
+        Will return:
+        [
+            {"k1": "v1"}, {"k2": "v2"},
+            {"k1": "v1", "k2": "v2"}
+        ]
+        :rtype: List[Dict[str, str | int]]
+        """
+        list_of_dicts = []
+        # for each possible length from 1 to the length of the dictionary
+        for r in range(1, len(dict) + 1):
+            # get all combinations of that length
+            for subset in combinations(dict, r):
+                # make a dictionary from each combination and append to list
+                list_of_dicts.append({key: dict[key] for key in subset})
+
+        return list_of_dicts
+
+    def _get_test_name_from_combination(self, combination: Dict[str, str | int]) -> str:
+        """Get the name of the combination from the optional parameters.
+
+        :param combination: The combination that contains as key the name of the combination
+        :type combination: Dict[str, str  |  int]
+        :return: The combined name of all keys of the dictionary
+        :rtype: str
+        """
+        return "_".join(combination.keys())
+
     def _get_all_params_with_example(self, get: Get) -> Dict[str, Dict[str, str | int]]:
         """Allow us to get the query parameter with their example
         from the given get object.
@@ -139,17 +197,23 @@ class Test{method_name[0].upper() + method_name[1:]}({helper_name}):
         :return: As key the name of the function and as value the parameters with their value
         :rtype: Dict[Dict[str, str | int]]
         """
-        # TODO: Create multiple examples with default values and not
         if "parameters" not in get:
-            return {}
-        ret = {}
-        for parameter in get["parameters"]:
-            if "example" in parameter:
-                ret[parameter["name"]] = parameter["example"]
-            else:
-                ret[parameter["name"]] = parameter["schema"]["default"]
-
-        return ret
+            return {"": {}}
+        else:
+            ret = {}
+            required_params = {}
+            for parameter in get["parameters"]:
+                if parameter["required"]:
+                    required_params[parameter["name"]] = parameter["example"]
+            
+            ret["only_required"] = required_params
+            all_options = self._get_all_optional_parameters(get)
+            all_combinations = self._get_all_combinations(all_options)
+            for combination in all_combinations:
+                to_add = {**required_params, **combination}
+                ret[self._get_test_name_from_combination(combination)] = to_add
+        
+            return ret
 
     def _format_example(self, example: str | int) -> str:
         if type(example) == int:
