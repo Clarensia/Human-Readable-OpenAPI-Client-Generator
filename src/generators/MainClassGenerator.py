@@ -694,7 +694,7 @@ class {self._class_name}:
     def _add_method(self, path: str, path_object: OpenAPIPath, schema: Dict[str, Schema]) -> str:
         get = path_object["get"]
         method_name = get_method_name(path)
-        ret = f"    async def {method_name}(self{self._get_func_params(get)}):\n"
+        ret = f"    async def {method_name}(self{self._get_func_params(get)}) -> {self._get_response_type(get)}:\n"
         ret += self._get_function_description(get, schema)
         ret += self._get_function_implementation(path, get, schema)
         return ret
