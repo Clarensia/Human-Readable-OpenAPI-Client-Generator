@@ -74,7 +74,7 @@ class {helper_name}(IsolatedAsyncioTestCase):
         this way the tests are truly isolated.
         """
         self.api = {self._api_name}(api_key=self._api_key)
-        self._session = ClientSession({self._api_url})
+        self._session = ClientSession("{self._api_url}")
         
     async def asyncTearDown(self):
         """Free the resources created from asyncSetUp
