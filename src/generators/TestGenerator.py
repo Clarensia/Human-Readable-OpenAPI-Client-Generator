@@ -166,11 +166,11 @@ class Test{method_name[0].upper() + method_name[1:]}({helper_name}):
         """
         list_of_dicts = []
         # for each possible length from 1 to the length of the dictionary
-        for r in range(1, len(dict) + 1):
+        for r in range(1, len(all_options) + 1):
             # get all combinations of that length
-            for subset in combinations(dict, r):
+            for subset in combinations(all_options, r):
                 # make a dictionary from each combination and append to list
-                list_of_dicts.append({key: dict[key] for key in subset})
+                list_of_dicts.append({key: all_options[key] for key in subset})
 
         return list_of_dicts
 
@@ -184,7 +184,7 @@ class Test{method_name[0].upper() + method_name[1:]}({helper_name}):
         """
         return "_".join(combination.keys())
 
-    def _get_all_params_with_example(self, get: Get) -> Dict[str, Dict[str, str | int]]:
+    def _get_all_params_with_examples(self, get: Get) -> Dict[str, Dict[str, str | int]]:
         """Allow us to get the query parameter with their example
         from the given get object.
         
@@ -266,8 +266,7 @@ class Test{method_name[0].upper() + method_name[1:]}({helper_name}):
     def _add_tests_for_route(self, route_path: str, get: Get):
         method_name = get_method_name(route_path)
         all_params = self._get_all_params_with_examples(get)
-        params_examples = self._get_params_with_example(get)
-        ret = self._get_class_begining(method_name, param_name)
+        ret = self._get_class_begining(method_name)
         for param_name in all_params:
             params_examples = all_params[param_name]
             ret += "\n"
