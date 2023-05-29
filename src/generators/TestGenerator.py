@@ -174,6 +174,17 @@ class Test{method_name[0].upper() + method_name[1:]}({helper_name}):
         parts = ret.rsplit('\n', 1)
         return ')'.join(parts)
 
+    def _is_response_list(self, get: Get) -> bool:
+        """Verify if the given response type is a List or a dataclass
+
+        :param get: The get of the path object
+        :type get: Get
+        :return: `True` if the returned value is an array `False` otherwise
+        :rtype: bool
+        """
+        ret_schema = get["responses"]["200"]["content"]["application/json"]["schema"]
+        return "type" in ret_schema and ret_schema["type"] == "array"
+
     def _add_test_for_route(self, route_path: str, get: Get):
         method_name = get_method_name(route_path)
         params_examples = self._get_params_with_example(get)
@@ -184,8 +195,11 @@ class Test{method_name[0].upper() + method_name[1:]}({helper_name}):
         else:
             ret += f'        api_result = await self.api.{method_name}({self._add_examples_to_method_call(params_examples)})\n'
             # We ommit the ')' here because it is added by _format_params_api_call
-            ret += f'        api_call = await self.do_request("{route_path}", params={self._format_params_api_call(params_examples)}\n'    
-        ret += '        self.assertEqual(asdict(api_result), api_call)\n'
+            ret += f'        api_call = await self.do_request("{route_path}", params={self._format_params_api_call(params_examples)}\n'
+        if self._is_response_list(get):
+            ret += '        self.assertListEqual([asdict(r) for r in api_result], api_call)'
+        else:
+            ret += '        self.assertDictEqual(asdict(api_result), api_call)\n'
         self._write_test(f"test_{method_name}", ret)
 
     def generate_tests(self, routes: Dict[str, OpenAPIPath]):
