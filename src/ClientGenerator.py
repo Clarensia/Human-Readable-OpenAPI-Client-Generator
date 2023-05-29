@@ -73,7 +73,8 @@ class ClientGenerator:
         self._exceptions_folder = os.path.join(self._dest_folder, "exceptions")
         self._test_folder = os.path.join(self._dest_folder, "tests")
         config_parsed = _parse_config(config_file)
-        self._main_class_generator = MainClassGenerator(config_parsed["name"], config_parsed["api-url"], self._dest_folder)
+        self._main_class_generator = MainClassGenerator(config_parsed["name"], config_parsed["api-url"], self._dest_folder, True)
+        self._main_class_generator_sync = MainClassGenerator(config_parsed["name"], config_parsed["api-url"], self._dest_folder, False)
         self._model_generator = ModelGenerator(config_parsed["name"], self._models_folder, self._exceptions_folder)
         self._test_generator = TestGenerator(config_parsed["name"], config_parsed["api-url"], self._test_folder)
 
@@ -131,6 +132,7 @@ class ClientGenerator:
         create_requirements(self._dest_folder)
         create_gitignore(self._dest_folder)
         self._main_class_generator.generate_main_class(open_api_file)
+        self._main_class_generator_sync.generate_main_class(open_api_file)
         schemas: Dict[str, Schema] = open_api_file["components"]["schemas"]
         self._model_generator.build_models(schemas)
         self._test_generator.generate_tests(open_api_file["paths"])

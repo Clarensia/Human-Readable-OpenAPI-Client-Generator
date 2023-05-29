@@ -238,10 +238,11 @@ class MainClassGenerator:
     we will not have an error
     '''
 
-    def __init__(self, class_name: str, api_url: str, result_folder: str):
+    def __init__(self, class_name: str, api_url: str, result_folder: str, is_async: bool):
         self._class_name = class_name
         self._api_url = api_url
         self._result_folder = result_folder
+        self._is_async = is_async
 
     def _has_list(self, paths: Dict[str, OpenAPIPath]) -> bool:
         for path in paths:
