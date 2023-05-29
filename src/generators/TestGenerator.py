@@ -185,6 +185,18 @@ class Test{method_name[0].upper() + method_name[1:]}({helper_name}):
         ret_schema = get["responses"]["200"]["content"]["application/json"]["schema"]
         return "type" in ret_schema and ret_schema["type"] == "array"
 
+    def _is_response_python_type(self, get: Get) -> bool:
+        """Verify if the given response is a normal Python type
+
+        :param get: The get from the route
+        :type get: Get
+        :return: `True` if the response is a normal Python type
+        :rtype: bool
+        """
+        ret_schema = get["responses"]["200"]["content"]["application/json"]["schema"]
+        return "type" in ret_schema and (ret_schema["type"] == "integer"\
+            or ret_schema["type"] == "string")
+
     def _add_test_for_route(self, route_path: str, get: Get):
         method_name = get_method_name(route_path)
         params_examples = self._get_params_with_example(get)
@@ -197,7 +209,9 @@ class Test{method_name[0].upper() + method_name[1:]}({helper_name}):
             # We ommit the ')' here because it is added by _format_params_api_call
             ret += f'        api_call = await self.do_request("{route_path}", params={self._format_params_api_call(params_examples)}\n'
         if self._is_response_list(get):
-            ret += '        self.assertListEqual([asdict(r) for r in api_result], api_call)'
+            ret += '        self.assertListEqual([asdict(r) for r in api_result], api_call)\n'
+        elif self._is_response_python_type(get):
+            ret += '        self.assertEqual(api_result, api_call)\n'
         else:
             ret += '        self.assertDictEqual(asdict(api_result), api_call)\n'
         self._write_test(f"test_{method_name}", ret)
