@@ -164,7 +164,7 @@ class Test{method_name[0].upper() + method_name[1:]}({helper_name}):
             else:
                 is_first = False
             
-            ret += f'{example_key}={self._format_example(example_key)}'
+            ret += f'{example_key}={self._format_example(examples[example_key])}'
  
         return ret
 
