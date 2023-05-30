@@ -397,15 +397,7 @@ class {self._class_name}:
 
     {add_indent(infos["description"], 4)}
     """
-        
-    _api_key: str | None = None
-    """Your API key.
-    
-    This SDK will work without an API key, but we advise you to provide one in order to
-    unlock better performance.
-    
-    You can get your API key for free on this link: https://dashboard.blockchainapis.io
-    """
+
     _session: ClientSession
     """The session that is used by async operation.
     
@@ -453,15 +445,6 @@ class {self._class_name}Sync:
     {add_indent(infos["description"], 4)}
     Please note that this class is not async which is less optimized. To run more otpimized
     requests, please use: {self._class_name}
-    """
-        
-    _api_key: str | None = None
-    """Your API key.
-    
-    This SDK will work without an API key, but we advise you to provide one in order to
-    unlock better performance.
-    
-    You can get your API key for free on this link: https://dashboard.blockchainapis.io
     """
     
     def __init__(self, api_key: str | None = None):

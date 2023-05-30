@@ -76,7 +76,8 @@ class ClientGenerator:
         self._main_class_generator = MainClassGenerator(config_parsed["name"], config_parsed["api-url"], self._dest_folder, True)
         self._main_class_generator_sync = MainClassGenerator(config_parsed["name"], config_parsed["api-url"], self._dest_folder, False)
         self._model_generator = ModelGenerator(config_parsed["name"], self._models_folder, self._exceptions_folder)
-        self._test_generator = TestGenerator(config_parsed["name"], config_parsed["api-url"], self._test_folder)
+        self._test_generator = TestGenerator(config_parsed["name"], config_parsed["api-url"], self._test_folder, True)
+        self._sync_test_generator = TestGenerator(config_parsed["name"], config_parsed["api-url"], self._test_folder, False)
 
     def _verify_args(self, arguments: Namespace):
         """Verify if the arguments are correct. It prints an error if the arguments

@@ -24,10 +24,14 @@ class TestGenerator:
     _test_folder: str
     """The path to the folder containing the tests"""
 
-    def __init__(self, api_name: str, api_url: str, test_folder: str):
+    _is_async: bool
+    """If we should generate the tests for the async client or the sync one"""
+
+    def __init__(self, api_name: str, api_url: str, test_folder: str, is_async: bool):
         self._api_name = api_name
         self._api_url = api_url
         self._test_folder = test_folder
+        self._is_async = is_async
 
     def _write_test(self, test_file: str, text: str):
         with open(os.path.join(self._test_folder, test_file + ".py"), "w+") as f:
@@ -101,6 +105,48 @@ class {helper_name}(IsolatedAsyncioTestCase):
 '''
         self._write_test(helper_name, to_write)
 
+    def _generate_sync_helper_file(self):
+        helper_name = f'{self._api_name}SyncTester'
+        to_write = f'''
+import requests
+
+from unittest import TestCase
+from typing import Any
+from urllib.parse import urljoin
+
+from {self._api_name}Sync import {self._api_name}Sync
+from secret_config import API_KEY
+
+class {helper_name}(TestCase):
+    """
+    Helper class to write some test for {self._api_name}Sync
+    
+    This test are for the synchronous client only
+    """
+    
+    api: {self._api_name}Sync | None
+    """The API SDK that we have to test"""
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.api = None
+        self._headers = {{
+            "api-key": API_KEY  
+        }}
+        self._base_url = "{self._api_url}"
+    
+    def setUp(self):
+        self.api = {self._api_name}Sync(api_key=API_KEY)
+
+    def tearDown(self):
+        self.api = None
+
+    def do_request(self, url, params = {{}}):
+        url = urljoin(self._base_url, url)
+        response = requests.get(url, params=params, headers=self._headers)
+        return response.json()
+'''
+        self._write_test(helper_name, to_write)
 
     def _generate_config_files(self):
         to_write = '''
@@ -292,7 +338,10 @@ class Test{method_name[0].upper() + method_name[1:]}({helper_name}):
         :param routes: The routes of the API
         :type routes: Dict[str, OpenAPIPath]
         """
-        self._generate_helper_file()
-        self._generate_config_files()
+        if self._is_async:
+            self._generate_helper_file()
+            self._generate_config_files()
+        else:
+            self._generate_sync_helper_file()
         for route in routes:
             self._add_tests_for_route(route, routes[route]["get"])
