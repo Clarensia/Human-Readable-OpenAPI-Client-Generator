@@ -312,6 +312,8 @@ class MainClassGenerator:
             ret += "from typing import Any, Dict, List\n"
         else:
             ret += "from typing import Any, Dict\n"
+        if not self._is_async:
+            ret += "from urllib.parse import urljoin\n"
 
         if self._is_async:
             ret += "\nfrom aiohttp import ClientSession\n\n"
@@ -389,7 +391,7 @@ class {self._class_name}:
     """
     
     def __init__(self, api_key: str | None = None):
-        """Creates a {self._class_name} sync instance that allow you to make API calls.
+        """Creates a {self._class_name} async instance that allow you to make API calls.
 
         The client works without an API key, but for better performance, we advise you
         to get one at: https://dashboard.blockchainapis.io
