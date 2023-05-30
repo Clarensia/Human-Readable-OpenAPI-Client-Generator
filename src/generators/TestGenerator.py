@@ -161,7 +161,10 @@ API_KEY = "<Your api key here>"
         self._write_test("secret_config", to_write)
 
     def _get_class_begining(self, method_name: str) -> str:
-        helper_name = f"{self._api_name}Tester"
+        if self._is_async:
+            helper_name = f"{self._api_name}Tester"
+        else:
+            helper_name = f"{self._api_name}SyncTester"
         return f'''
 from dataclasses import asdict
 
