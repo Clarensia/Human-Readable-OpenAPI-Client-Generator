@@ -481,7 +481,7 @@ class {self._class_name}Sync:
 
 '''
         ret += self._add_do_request_method(exceptions)
-        return self._add_do_request_method(exceptions)
+        return ret
 
     def _get_func_param_with_default(self, param: FuncParam) -> str:
         """Get the function parameters with the default value
