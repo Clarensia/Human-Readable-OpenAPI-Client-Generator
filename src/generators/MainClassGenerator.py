@@ -330,19 +330,20 @@ class MainClassGenerator:
 
         return ret
 
-    def _match_error_type(self, exceptions: List[str]) -> str:
-        ret = '                match error_type:\n'
+    def _match_error_type(self, exceptions: List[str], indent: int) -> str:
+        indentation = ' ' * indent
+        ret = f'{indentation}match error_type:\n'
         for exception in exceptions:
-            ret += f'                    case "{exception}":\n'
-            ret += f'                        raise {exception}(response.status, error_data["detail"]["detail"])\n'
-        ret += "                    case unknown:\n"
-        ret += '                        raise Exception(f"Unkwnown Exception type: {unknown}.\\nGot this exception while handling:\\n{error_data} with status code: {response.status}")\n'
+            ret += f'{indentation}    case "{exception}":\n'
+            ret += f'{indentation}        raise {exception}(response.status, error_data["detail"]["detail"])\n'
+        ret += f"{indentation}    case unknown:\n"
+        ret += indentation + '        raise Exception(f"Unkwnown Exception type: {unknown}.\\nGot this exception while handling:\\n{error_data} with status code: {response.status}")\n'
         return ret
 
     def _add_do_request_method(self, exceptions: List[str]) -> str:
         ret = f'''
-    async def _do_request(self, path: str, params: Dict[str, Any] | None = None) -> Dict[str, None]:
-        """Make raw API requests (that return the json result).
+    async def _do_request(self, path: str, params: Dict[str, Any] | None = None) -> Dict[str, Any]:
+        """Make raw API request (that return the json result).
         
         This method additionaly adds the user API key to the request if it is present.
 
@@ -358,10 +359,36 @@ class MainClassGenerator:
                 error_data = await response.json()
                 error_type = error_data["detail"]["error_type"]
 '''
-        ret += self._match_error_type(exceptions)
+        ret += self._match_error_type(exceptions, 16)
         ret += "\n"
         ret += '            return await response.json()\n'
         return ret        
+
+    def _add_do_request_method_sync(self, exceptions: List[str]) -> str:
+        ret = f'''
+    def _do_request(self, path: str, params: Dict[str, Any] | None = None) -> Dict[str, Any]:
+        """Make a raw API request (that return the json result).
+        
+        It makes the request in a synchronous way and you don't need to close the
+        BlockchainAPIs instance.
+
+        :param path: The path of the request
+        :type path: str
+        :param params: The optional query parameters of the request, defaults to None
+        :type params: Dict[str, Any] | None, optional
+        :return: The json-formated result
+        :rtype: Dict[str, Any]
+        """
+        url = urljoin(self._base_url, path)
+        response = requests.get(url, params=params, headers=self._headers)
+        response_json = response.json()
+        if response.status_code != 200:
+            error_type = response_json["detail"]["error_type"]
+'''
+        ret += self._match_error_type(exceptions, 12)
+        ret += "\n"
+        ret += "        return response_json\n"
+        return ret
 
     def _add_class_begining(self, infos: Info, exceptions: List[str]) -> str:
         ret = f'''
@@ -403,8 +430,8 @@ class {self._class_name}:
         self._headers = {{
             "accept": "application/json"
         }}
-        if self._api_key is not None:
-            self._headers["api-key"] = self._api_key
+        if api_key is not None:
+            self._headers["api-key"] = api_key
         self._session = ClientSession("{self._api_url}")
 
     async def close(self):
@@ -415,8 +442,46 @@ class {self._class_name}:
         """
         await self._session.close()
 '''
-        ret += self._add_do_request_method(exceptions)
+        ret += self._add_do_request_method_sync(exceptions)
         return ret
+
+    def _add_class_begining_sync(self, infos: Info, exceptions: List[str]) -> str:
+        ret = f'''
+class {self._class_name}Sync:
+    """{infos["title"]}
+
+    {add_indent(infos["description"], 4)}
+    """
+        
+    _api_key: str | None = None
+    """Your API key.
+    
+    This SDK will work without an API key, but we advise you to provide one in order to
+    unlock better performance.
+    
+    You can get your API key for free on this link: https://dashboard.blockchainapis.io
+    """
+    
+    def __init__(self, api_key: str | None = None):
+        """Creates a {self._class_name}Sync sync instance that allow you to make API calls
+        in a synchronous way.
+
+        The client works without an API key, but for better performance, we advise you
+        to get one at: https://dashboard.blockchainapis.io
+
+        :param api_key: Your API key, defaults to None
+        :type api_key: str | None, optional
+        """
+        self._headers = {{
+            "accept": "application/json"
+        }}
+        if api_key is not None:
+            self._headers["api-key"] = api_key
+        self._base_url = "{self._api_url}"
+
+'''
+        ret += self._add_do_request_method(exceptions)
+        return self._add_do_request_method(exceptions)
 
     def _get_func_param_with_default(self, param: FuncParam) -> str:
         """Get the function parameters with the default value
@@ -732,7 +797,10 @@ class {self._class_name}:
         exception_names = self._get_list_of_exceptions(open_api_file["components"]["schemas"])
         main_class_text += self._add_necessary_imports(open_api_file["paths"], open_api_file["components"]["schemas"], exception_names)
         main_class_text += "\n\n"
-        main_class_text += self._add_class_begining(open_api_file["info"], exception_names)
+        if self._is_async:
+            main_class_text += self._add_class_begining(open_api_file["info"], exception_names)
+        else:
+            main_class_text += self._add_class_begining_sync(open_api_file["info"], exception_names)
         main_class_text += "\n"
         for path in open_api_file["paths"]:
             main_class_text += self._add_method(path, open_api_file["paths"][path], open_api_file["components"]["schemas"])
