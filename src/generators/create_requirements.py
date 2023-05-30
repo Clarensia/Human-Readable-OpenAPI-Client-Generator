@@ -7,5 +7,5 @@ def create_requirements(dest_folder: str):
     :type dest_folder: str
     """
     with open(os.path.join(dest_folder, "requirements.txt"), "w+") as f:
-        f.write("aiohttp\n")
+        f.write("aiohttp\nrequests\n")
     
