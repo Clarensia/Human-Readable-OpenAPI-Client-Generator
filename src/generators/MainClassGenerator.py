@@ -760,16 +760,26 @@ class {self._class_name}Sync:
                         ret += f'            params["{param["name"]}"] = {param["name"]}\n'
                 else:
                     ret += f'        params["{param["name"]}"] = {param["name"]}\n'
-            ret += f'        ret = await self._do_request("{path}", params)\n'
+            if self._is_async:
+                ret += f'        ret = await self._do_request("{path}", params)\n'
+            else:
+                ret += f'        ret = self._do_request("{path}", params)'
         else:
-            ret += f'        ret = await self._do_request("{path}")\n'
+            if self._is_async:
+                ret += f'        ret = await self._do_request("{path}")\n'
+            else:
+                ret += f'        ret = self._do_request("{path}")\n'
         ret += self._build_returned_value(get, schema)
         return ret
 
     def _add_method(self, path: str, path_object: OpenAPIPath, schema: Dict[str, Schema]) -> str:
         get = path_object["get"]
         method_name = get_method_name(path)
-        ret = f"    async def {method_name}(self{self._get_func_params(get)}) -> {self._get_response_type(get)}:\n"
+        ret = "    "
+        if self._is_async:
+            ret += "async "
+        
+        ret += f"def {method_name}(self{self._get_func_params(get)}) -> {self._get_response_type(get)}:\n"
         ret += self._get_function_description(get, schema)
         ret += self._get_function_implementation(path, get, schema)
         return ret
