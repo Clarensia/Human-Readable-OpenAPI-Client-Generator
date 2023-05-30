@@ -137,3 +137,4 @@ class ClientGenerator:
         schemas: Dict[str, Schema] = open_api_file["components"]["schemas"]
         self._model_generator.build_models(schemas)
         self._test_generator.generate_tests(open_api_file["paths"])
+        self._sync_test_generator.generate_tests(open_api_file["paths"])
