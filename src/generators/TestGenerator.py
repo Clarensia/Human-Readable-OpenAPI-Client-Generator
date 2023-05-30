@@ -316,21 +316,36 @@ class Test{method_name[0].upper() + method_name[1:]}({helper_name}):
         for param_name in all_params:
             params_examples = all_params[param_name]
             ret += "\n"
-            ret += f'    async def test_{method_name}_{param_name}(self):\n'
+            ret += "    "
+            if self._is_async:
+                ret += "async "
+            
+            ret += f'def test_{method_name}_{param_name}(self):\n'
             if params_examples == {}:
-                ret += f'        api_result = await self.api.{method_name}()\n'
-                ret += f'        api_call = await self.do_request("{route_path}")\n'
+                if self._is_async:
+                    ret += f'        api_result = await self.api.{method_name}()\n'
+                    ret += f'        api_call = await self.do_request("{route_path}")\n'
+                else:
+                    ret += f'        api_result = self.api.{method_name}()\n'
+                    ret += f'        api_call = self.do_request("{route_path}")\n'
             else:
-                ret += f'        api_result = await self.api.{method_name}({self._add_examples_to_method_call(params_examples)})\n'
-                # We ommit the ')' here because it is added by _format_params_api_call
-                ret += f'        api_call = await self.do_request("{route_path}", params={self._format_params_api_call(params_examples)}\n'
+                if self._is_async:
+                    ret += f'        api_result = await self.api.{method_name}({self._add_examples_to_method_call(params_examples)})\n'
+                    # We ommit the ')' here because it is added by _format_params_api_call
+                    ret += f'        api_call = await self.do_request("{route_path}", params={self._format_params_api_call(params_examples)}\n'
+                else:
+                    ret += f'        api_result = self.api.{method_name}({self._add_examples_to_method_call(params_examples)})\n'
+                    ret += f'        api_call = self.do_request("{route_path}", params={self._format_params_api_call(params_examples)}\n'
             if self._is_response_list(get):
                 ret += '        self.assertListEqual([asdict(r) for r in api_result], api_call)\n'
             elif self._is_response_python_type(get):
                 ret += '        self.assertEqual(api_result, api_call)\n'
             else:
                 ret += '        self.assertDictEqual(asdict(api_result), api_call)\n'
-        self._write_test(f"test_{method_name}", ret)
+        if self._is_async:
+            self._write_test(f"test_{method_name}", ret)
+        else:
+            self._write_test(f"test_{method_name}_sync", ret)
 
     def generate_tests(self, routes: Dict[str, OpenAPIPath]):
         """Generate all of the test files for the API
