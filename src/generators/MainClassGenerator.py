@@ -306,16 +306,23 @@ class MainClassGenerator:
 
     def _add_necessary_imports(self, paths: Dict[str, OpenAPIPath], all_schema: Dict[str, Schema], exceptions: List[str]) -> str:
         ret = ""
+        if not self._is_async:
+            ret += "import requests\n\n"
         if self._has_list(paths):
             ret += "from typing import Any, Dict, List\n"
         else:
             ret += "from typing import Any, Dict\n"
-        ret += "\nfrom aiohttp import ClientSession\n\n"
+
+        if self._is_async:
+            ret += "\nfrom aiohttp import ClientSession\n\n"
+        else:
+            ret += "\n"
 
         models_to_import = self._get_models_to_import(paths, all_schema)
         for model in models_to_import:
             ret += f"from models.{model} import {model}\n"
 
+        ret += "\n"
         for exception in exceptions:
             ret += f"from exceptions.{exception} import {exception}\n"
 
@@ -701,8 +708,12 @@ class {self._class_name}:
         return ret
 
     def _write_main_class(self, to_write: str):
-        with open(os.path.join(self._result_folder, f"{self._class_name}.py"), "w+") as f:
-            f.write(to_write)
+        if self._is_async:
+            with open(os.path.join(self._result_folder, f"{self._class_name}.py"), "w+") as f:
+                f.write(to_write)
+        else:
+            with open(os.path.join(self._result_folder, f"{self._class_name}Sync.py"), "w+") as f:
+                f.write(to_write)
 
     def _get_list_of_exceptions(self, schemas: Dict[str, Schema]) -> List[str]:
         """Get the list of each exception that we can possibly throw
