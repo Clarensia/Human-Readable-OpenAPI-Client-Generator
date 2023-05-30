@@ -383,7 +383,7 @@ class MainClassGenerator:
         response = requests.get(url, params=params, headers=self._headers)
         if response.status_code != 200:
             error_data = response.json()
-            error_type = response_json["detail"]["error_type"]
+            error_type = error_data["detail"]["error_type"]
 '''
         ret += self._match_error_type(exceptions, 12)
         ret += "\n"
@@ -763,7 +763,7 @@ class {self._class_name}Sync:
             if self._is_async:
                 ret += f'        ret = await self._do_request("{path}", params)\n'
             else:
-                ret += f'        ret = self._do_request("{path}", params)'
+                ret += f'        ret = self._do_request("{path}", params)\n'
         else:
             if self._is_async:
                 ret += f'        ret = await self._do_request("{path}")\n'
