@@ -381,13 +381,13 @@ class MainClassGenerator:
         """
         url = urljoin(self._base_url, path)
         response = requests.get(url, params=params, headers=self._headers)
-        response_json = response.json()
         if response.status_code != 200:
+            error_data = response.json()
             error_type = response_json["detail"]["error_type"]
 '''
         ret += self._match_error_type(exceptions, 12)
         ret += "\n"
-        ret += "        return response_json\n"
+        ret += "        return response.json()\n"
         return ret
 
     def _add_class_begining(self, infos: Info, exceptions: List[str]) -> str:
@@ -442,7 +442,7 @@ class {self._class_name}:
         """
         await self._session.close()
 '''
-        ret += self._add_do_request_method_sync(exceptions)
+        ret += self._add_do_request_method(exceptions)
         return ret
 
     def _add_class_begining_sync(self, infos: Info, exceptions: List[str]) -> str:
@@ -480,7 +480,7 @@ class {self._class_name}Sync:
         self._base_url = "{self._api_url}"
 
 '''
-        ret += self._add_do_request_method(exceptions)
+        ret += self._add_do_request_method_sync(exceptions)
         return ret
 
     def _get_func_param_with_default(self, param: FuncParam) -> str:
