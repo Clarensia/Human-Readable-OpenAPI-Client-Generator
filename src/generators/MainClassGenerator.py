@@ -451,6 +451,8 @@ class {self._class_name}Sync:
     """{infos["title"]}
 
     {add_indent(infos["description"], 4)}
+    Please note that this class is not async which is less optimized. To run more otpimized
+    requests, please use: {self._class_name}
     """
         
     _api_key: str | None = None
