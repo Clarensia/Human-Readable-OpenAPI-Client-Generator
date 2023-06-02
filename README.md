@@ -20,3 +20,11 @@ The generated client will be very simple, for example in Python:
 
 It will use Async features and be documented using sphinx for Python. This way a Documentation
 can easily be generated from the SDK created.
+
+## TODO
+
+- [ ] Make the destination an already ready module
+- [ ] Change `TooManyRequestException` to `TooManyRequestsException` (add an `s`)
+- [ ] Change tests so that they import from the module
+- [ ] Change files so that a newline is not added on top of them
+- [ ] Remove asdict import in tests when it is not needed (for example the decimals call)
