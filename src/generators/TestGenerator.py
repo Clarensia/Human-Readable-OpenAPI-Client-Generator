@@ -161,20 +161,24 @@ API_KEY = "<Your api key here>"
         self._write_test("config", to_write)
         self._write_test("secret_config", to_write)
 
-    def _get_class_begining(self, method_name: str) -> str:
+    def _get_class_begining(self, method_name: str, get: Get) -> str:
         if self._is_async:
             helper_name = f"{self._api_name}Tester"
         else:
             helper_name = f"{self._api_name}SyncTester"
-        return f'''from dataclasses import asdict
+        ret = ""
+        if not self._is_response_python_type(get):
+            ret += "from dataclasses import asdict\n\n"
 
-from {helper_name} import {helper_name}
+        ret += f'''from {helper_name} import {helper_name}
 
 class Test{method_name[0].upper() + method_name[1:]}({helper_name}):
     """
     Test for the method {method_name} of {self._api_name}
     """
 '''
+
+        return ret
 
     def _get_all_optional_parameters(self, get: Get) -> Dict[str, str | int]:
         """Get all of the optional parameters
@@ -315,7 +319,7 @@ class Test{method_name[0].upper() + method_name[1:]}({helper_name}):
     def _add_tests_for_route(self, route_path: str, get: Get):
         method_name = get_method_name(route_path)
         all_params = self._get_all_params_with_examples(get)
-        ret = self._get_class_begining(method_name)
+        ret = self._get_class_begining(method_name, get)
         for param_name in all_params:
             params_examples = all_params[param_name]
             ret += "\n"
