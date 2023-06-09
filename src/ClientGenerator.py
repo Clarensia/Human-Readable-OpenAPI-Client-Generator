@@ -68,16 +68,17 @@ class ClientGenerator:
         self._verify_args(arguments)
         self._open_api_file_path = arguments.file
         config_file = arguments.config
+        self._config = _parse_config(config_file)
         self._dest_folder = arguments.dest
-        self._models_folder = os.path.join(self._dest_folder, "models")
-        self._exceptions_folder = os.path.join(self._dest_folder, "exceptions")
+        package_folder = os.path.join(self._dest_folder, "src", self._config["package"]["name"])
+        self._models_folder = os.path.join(package_folder, "models")
+        self._exceptions_folder = os.path.join(package_folder, "exceptions")
         self._test_folder = os.path.join(self._dest_folder, "tests")
-        config_parsed = _parse_config(config_file)
-        self._main_class_generator = MainClassGenerator(config_parsed["name"], config_parsed["api-url"], self._dest_folder, True)
-        self._main_class_generator_sync = MainClassGenerator(config_parsed["name"], config_parsed["api-url"], self._dest_folder, False)
-        self._model_generator = ModelGenerator(config_parsed["name"], self._models_folder, self._exceptions_folder)
-        self._test_generator = TestGenerator(config_parsed["name"], config_parsed["api-url"], self._test_folder, True)
-        self._sync_test_generator = TestGenerator(config_parsed["name"], config_parsed["api-url"], self._test_folder, False)
+        self._main_class_generator = MainClassGenerator(self._config["name"], self._config["api-url"], package_folder, True)
+        self._main_class_generator_sync = MainClassGenerator(self._config["name"], self._config["api-url"], package_folder, False)
+        self._model_generator = ModelGenerator(self._config["name"], self._models_folder, self._exceptions_folder)
+        self._test_generator = TestGenerator(self._config["name"], self._config["api-url"], self._test_folder, True)
+        self._sync_test_generator = TestGenerator(self._config["name"], self._config["api-url"], self._test_folder, False)
 
     def _verify_args(self, arguments: Namespace):
         """Verify if the arguments are correct. It prints an error if the arguments
@@ -120,6 +121,8 @@ class ClientGenerator:
                 sys.exit(1)
             os.mkdir(self._dest_folder)
 
+        os.mkdir(self._dest_folder, "src")
+        os.mkdir(self._dest_folder, "src", self._config["package"]["name"])
         os.mkdir(self._models_folder)
         os.mkdir(self._exceptions_folder)
         os.mkdir(self._test_folder)
