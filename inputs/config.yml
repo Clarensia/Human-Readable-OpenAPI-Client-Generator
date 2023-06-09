@@ -3,6 +3,9 @@ api-url: "https://api.blockchainapis.io"
 package:
   name: blockchainapis
   author: Clarensia
+  author-comment: |
+    # Clarensia: https://www.clarensia.com is the company behind
+    # the development of https://www.blockchainapis.io
   version: 0.1.1
   description: |
     The blockchain-apis package allow you to interact with Blockchain
@@ -13,3 +16,5 @@ package:
 
     If you already have a project and don't want to bother with async,
     you can use the BlockchainAPIsSync class.
+  # The modules that you want to be exported when someone write from package import *
+  all-exports: ["BlockchainAPIs"]

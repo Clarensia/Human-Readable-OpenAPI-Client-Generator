@@ -1,10 +1,12 @@
-from typing import TypedDict
+from typing import List, TypedDict
 
 PackageType = TypedDict("PackageType", {
     "name": str,
     "author": str,
+    "author-comment": str,
     "version": str,
-    "description": str
+    "description": str,
+    "all-exports": List[str]
 })
 
 ConfigType = TypedDict("ConfigType", {

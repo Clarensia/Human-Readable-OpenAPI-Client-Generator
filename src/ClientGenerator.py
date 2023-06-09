@@ -70,12 +70,12 @@ class ClientGenerator:
         config_file = arguments.config
         self._config = _parse_config(config_file)
         self._dest_folder = arguments.dest
-        package_folder = os.path.join(self._dest_folder, "src", self._config["package"]["name"])
-        self._models_folder = os.path.join(package_folder, "models")
-        self._exceptions_folder = os.path.join(package_folder, "exceptions")
+        self._package_folder = os.path.join(self._dest_folder, "src", self._config["package"]["name"])
+        self._models_folder = os.path.join(self._package_folder, "models")
+        self._exceptions_folder = os.path.join(self._package_folder, "exceptions")
         self._test_folder = os.path.join(self._dest_folder, "tests")
-        self._main_class_generator = MainClassGenerator(self._config["name"], self._config["api-url"], package_folder, True)
-        self._main_class_generator_sync = MainClassGenerator(self._config["name"], self._config["api-url"], package_folder, False)
+        self._main_class_generator = MainClassGenerator(self._config["name"], self._config["api-url"], self._package_folder, True)
+        self._main_class_generator_sync = MainClassGenerator(self._config["name"], self._config["api-url"], self._package_folder, False)
         self._model_generator = ModelGenerator(self._config["name"], self._models_folder, self._exceptions_folder)
         self._test_generator = TestGenerator(self._config["name"], self._config["api-url"], self._test_folder, True)
         self._sync_test_generator = TestGenerator(self._config["name"], self._config["api-url"], self._test_folder, False)
@@ -108,6 +108,21 @@ class ClientGenerator:
             print(f"The configuration file does not exits: {arguments.config}")
             sys.exit(1)
 
+    def _create_package_init_file(self):
+        with open(self._package_folder, "__init__.py", "w+") as f:
+            f.write(f'''"""
+{self._config["package"]["description"]}
+"""
+
+{self._config["package"]["author-comment"]}
+__author__ = "{self._config["package"]["author"]}"
+__version__ = "{self._config["package"]["version"]}"
+''')
+
+    def _add_all_to_init(self):
+        with open(self._package_folder, "__init__.py", "a") as f:
+            f.write(f'\n__all__ = {self._config["package"]["all-exports"]}\n')
+
     def _init_dest_folder(self):
         """Create the destination folder if not exist as well as the
         child folders:
@@ -135,9 +150,11 @@ class ClientGenerator:
         self._init_dest_folder()
         create_requirements(self._dest_folder)
         create_gitignore(self._dest_folder)
+        self._create_package_init_file()
         self._main_class_generator.generate_main_class(open_api_file)
         self._main_class_generator_sync.generate_main_class(open_api_file)
         schemas: Dict[str, Schema] = open_api_file["components"]["schemas"]
         self._model_generator.build_models(schemas)
         self._test_generator.generate_tests(open_api_file["paths"])
         self._sync_test_generator.generate_tests(open_api_file["paths"])
+        self._add_all_to_init()
