@@ -92,3 +92,21 @@ def add_indent(text: str, indent: int, except_first_line: bool = False) -> str:
     for i in range(1, len(split_line)):
         ret += f"{indentation}{split_line[i]}\n"
     return ret
+
+def remove_last_line(text: str) -> str:
+    """Remove the last line of the given text.
+    
+    This is useful when we have too much lines sometimes
+
+    :param text: The text that we have to remove the last line from
+    :type text: str
+    :return: The text without the last line
+    :rtype: str
+    """
+    # split the string into lines
+    lines = text.split('\n')
+    # remove the last line
+    lines = lines[:-1]
+    # join the lines back into a single string
+    s = '\n'.join(lines)
+    return s

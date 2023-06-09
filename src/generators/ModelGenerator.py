@@ -3,7 +3,7 @@ import os
 
 from typing import Any, Dict, List
 
-from src.utils import add_indent
+from src.utils import add_indent, remove_last_line
 from src.generators.generator_types import Property, Schema
 
 
@@ -281,7 +281,7 @@ class {model_name}:
 
     def _write_model(self, model_name: str, model_text: str):
         with open(os.path.join(self._models_path, model_name + ".py"), "w+") as f:
-            f.write(model_text)
+            f.write(remove_last_line(model_text))
 
     def _write_exception(self, exception_name: str, text: str):
         with open(os.path.join(self._exceptions_path, exception_name + ".py"), "w+") as f:
