@@ -1,2 +1,15 @@
 name: "BlockchainAPIs"
 api-url: "https://api.blockchainapis.io"
+package:
+  name: blockchainapis
+  author: Clarensia
+  version: 0.1.1
+  description: |
+    The blockchain-apis package allow you to interact with Blockchain
+    APIs in a synchronous and asynchronous way.
+
+    If you are starting on a new project, it is better to use the async
+    class, which is called: BlockchainAPIs
+
+    If you already have a project and don't want to bother with async,
+    you can use the BlockchainAPIsSync class.
