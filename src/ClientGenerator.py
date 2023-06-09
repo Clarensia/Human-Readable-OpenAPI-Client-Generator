@@ -116,8 +116,7 @@ class ClientGenerator:
 {self._config["package"]["description"]}
 """
 
-{self._config["package"]["author-comment"]}
-__author__ = "{self._config["package"]["author"]}"
+{self._config["package"]["author-comment"]}__author__ = "{self._config["package"]["author"]}"
 __version__ = "{self._config["package"]["version"]}"
 
 ''')

@@ -342,21 +342,23 @@ class {exception_name}({main_class_name}):
         self._write_exception("__init__", f'''"""
 {self._exception_module_description}
 """
+
 ''')
 
     def _write_init_model(self):
         self._write_model("__init__", f'''"""
 {self._models_module_description}
 """
+
 ''')
 
     def _add_exported_exception(self, exception_name: str):
         with open(os.path.join(self._exceptions_path, "__init__.py"), "a") as f:
-            f.write(f'from .{exception_name} import {exception_name}')
+            f.write(f'from .{exception_name} import {exception_name}\n')
 
     def _add_exported_module(self, module_name: str):
         with open(os.path.join(self._models_path, "__init__.py"), "a") as f:
-            f.write(f'from .{module_name} import {module_name}')
+            f.write(f'from .{module_name} import {module_name}\n')
 
     def _add_all_exports(self, exports: List[str], is_exception: bool):
         ret = "\n__all__ = [\n"
@@ -369,7 +371,7 @@ class {exception_name}({main_class_name}):
                 ret += ","
             ret += "\n"
 
-        ret += "\n"
+        ret += "]\n"
         path = self._exceptions_path
         if not is_exception:
             path = self._models_path
