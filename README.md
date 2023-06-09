@@ -28,4 +28,4 @@ can easily be generated from the SDK created.
 - [x] Change tests so that they import from the module
 - [ ] Change files so that a newline is not added on top of them
 - [ ] Remove asdict import in tests when it is not needed (for example the decimals call)
-- [ ] Add example for variables
+- [ ] Add example for method calls
