@@ -322,11 +322,11 @@ class MainClassGenerator:
 
         models_to_import = self._get_models_to_import(paths, all_schema)
         for model in models_to_import:
-            ret += f"from models.{model} import {model}\n"
+            ret += f"from .models import {model}\n"
 
         ret += "\n"
         for exception in exceptions:
-            ret += f"from exceptions.{exception} import {exception}\n"
+            ret += f"from .exceptions import {exception}\n"
 
         return ret
 
