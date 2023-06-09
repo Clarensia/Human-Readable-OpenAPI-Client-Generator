@@ -520,9 +520,9 @@ class {self._class_name}Sync:
                     ret += f'        :type {param["name"]}: {convert_type(param["schema"]["type"])}, Optional\n'
                     ret += f'        :example {param["name"]}: '
                     if "example" in param:
-                        ret += param["example"]
+                        ret += str(param["example"])
                     else:
-                        ret += param["schema"]["default"]
+                        ret += str(param["schema"]["default"])
                     ret += "\n"
         return ret
 
