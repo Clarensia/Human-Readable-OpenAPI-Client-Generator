@@ -323,8 +323,7 @@ class {self._api_name}Exception(Exception, ABC):
         :rtype: str
         """
         main_class_name = f'{self._api_name}Exception'
-        return f'''
-from exceptions.{main_class_name} import {main_class_name}
+        return f'''from . import {main_class_name}
 
 class {exception_name}({main_class_name}):
     """
