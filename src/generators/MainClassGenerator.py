@@ -513,12 +513,17 @@ class {self._class_name}Sync:
                 if param["required"]:
                     ret += f'        :param {param["name"]}: {param["description"]}\n'
                     ret += f'        :type {param["name"]}: {convert_type(param["schema"]["type"])}\n'
-
+                    ret += f'        :example {param["name"]}: {param["example"]}\n'
             for param in get["parameters"]:
                 if not param["required"]:
                     ret += f'        :param {param["name"]}: {param["description"]}, defaults to {"None" if "default" not in param["schema"] else param["schema"]["default"]}\n'
                     ret += f'        :type {param["name"]}: {convert_type(param["schema"]["type"])}, Optional\n'
-
+                    ret += f'        :example {param["name"]}: '
+                    if "example" in param:
+                        ret += param["example"]
+                    else:
+                        ret += param["schema"]["default"]
+                    ret += "\n"
         return ret
 
     def _get_schema_name(self, get: Get) -> Tuple[str, bool]:
