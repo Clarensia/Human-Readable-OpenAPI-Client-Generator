@@ -43,8 +43,7 @@ class TestGenerator:
 
     def _generate_helper_file(self):
         helper_name = f"{self._api_name}Tester"
-        to_write = f'''
-from unittest import IsolatedAsyncioTestCase
+        to_write = f'''from unittest import IsolatedAsyncioTestCase
 from typing import Any
 
 from aiohttp import ClientSession
@@ -111,8 +110,7 @@ class {helper_name}(IsolatedAsyncioTestCase):
 
     def _generate_sync_helper_file(self):
         helper_name = f'{self._api_name}SyncTester'
-        to_write = f'''
-import requests
+        to_write = f'''import requests
 
 from unittest import TestCase
 from typing import Any
@@ -153,8 +151,7 @@ class {helper_name}(TestCase):
         self._write_test(helper_name, to_write)
 
     def _generate_config_files(self):
-        to_write = '''
-# Fill this file with your config and rename it secret_config.yml
+        to_write = '''# Fill this file with your config and rename it secret_config.yml
 
 # Write your api key here.
 # Don't forget to rename the file to secret_config.py before you
@@ -169,8 +166,7 @@ API_KEY = "<Your api key here>"
             helper_name = f"{self._api_name}Tester"
         else:
             helper_name = f"{self._api_name}SyncTester"
-        return f'''
-from dataclasses import asdict
+        return f'''from dataclasses import asdict
 
 from {helper_name} import {helper_name}
 
