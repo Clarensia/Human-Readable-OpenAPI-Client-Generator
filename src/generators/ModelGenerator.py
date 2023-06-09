@@ -344,7 +344,7 @@ class {exception_name}({main_class_name}):
 """
 ''')
 
-    def _add_module_init(self):
+    def _write_init_model(self):
         self._write_model("__init__", f'''"""
 {self._models_module_description}
 """
@@ -387,7 +387,7 @@ class {exception_name}({main_class_name}):
         """
         self._write_base_exception()
         self._write_init_exception()
-        self._write_init_module()
+        self._write_init_model()
         exported_exceptions = []
         exported_modules = []        
         for schema_name in schemas:

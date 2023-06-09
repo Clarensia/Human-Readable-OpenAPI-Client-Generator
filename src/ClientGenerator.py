@@ -119,6 +119,7 @@ class ClientGenerator:
 {self._config["package"]["author-comment"]}
 __author__ = "{self._config["package"]["author"]}"
 __version__ = "{self._config["package"]["version"]}"
+
 ''')
 
     def _add_all_to_init(self):

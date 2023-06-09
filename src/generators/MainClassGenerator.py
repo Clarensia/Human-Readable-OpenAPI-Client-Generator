@@ -790,7 +790,7 @@ class {self._class_name}Sync:
     def _add_export_to_package(self):
         """Append to the __init__.py file in order to allow it to export the current module
         """
-        with open(self._result_folder, "a") as f:
+        with open(os.path.join(self._result_folder, "__init__.py"), "a") as f:
             if self._is_async:
                 f.write(f'from .{self._class_name} import {self._class_name}\n')
             else:
