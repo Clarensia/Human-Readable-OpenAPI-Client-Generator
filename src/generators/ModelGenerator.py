@@ -388,6 +388,7 @@ class {exception_name}({main_class_name}):
         """
         self._write_base_exception()
         self._write_init_exception()
+        self._add_exported_exception(f"{self._api_name}Exception")
         self._write_init_model()
         exported_exceptions = []
         exported_modules = []        
