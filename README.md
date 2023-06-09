@@ -29,5 +29,5 @@ can easily be generated from the SDK created.
 - [x] Change the main files so that they import the models and exceptions correctly
 - [ ] Change files so that a newline is not added on top of them
 - [ ] Remove asdict import in tests when it is not needed (for example the decimals call)
-- [ ] Add example for method calls
+- [x] Add example for method calls
 - [x] Change @raises to :raises Exception:
