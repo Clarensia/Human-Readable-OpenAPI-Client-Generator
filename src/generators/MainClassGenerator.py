@@ -805,7 +805,7 @@ class {self._class_name}Sync:
         main_class_text = ""
         exception_names = self._get_list_of_exceptions(open_api_file["components"]["schemas"])
         main_class_text += self._add_necessary_imports(open_api_file["paths"], open_api_file["components"]["schemas"], exception_names)
-        main_class_text += "\n\n"
+        main_class_text += "\n"
         if self._is_async:
             main_class_text += self._add_class_begining(open_api_file["info"], exception_names)
         else:
@@ -813,7 +813,6 @@ class {self._class_name}Sync:
         main_class_text += "\n"
         for path in open_api_file["paths"]:
             main_class_text += self._add_method(path, open_api_file["paths"][path], open_api_file["components"]["schemas"])
-            main_class_text += "\n"
 
         self._write_main_class(main_class_text)
         self._add_export_to_package()
