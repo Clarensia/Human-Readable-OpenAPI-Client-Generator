@@ -123,10 +123,14 @@ class ModelGenerator:
     _exceptions_path: str
     """The path to the exception folder"""
     
-    def __init__(self, api_name: str, models_path: str, exceptions_path: str):
+    def __init__(self, api_name: str, models_path: str, exceptions_path: str,
+                 exception_module_description: str,
+                 models_module_description: str):
         self._models_path = models_path
         self._exceptions_path = exceptions_path
         self._api_name = api_name
+        self._exception_module_description = exception_module_description
+        self._models_module_description = models_module_description
 
     def _has_array(self, properties: Dict[str, Property]) -> bool:
         for property_name in properties:
@@ -334,6 +338,44 @@ class {exception_name}({main_class_name}):
         super().__init__(error_code, detail)    
 '''
 
+    def _write_init_exception(self):
+        self._write_exception("__init__", f'''"""
+{self._exception_module_description}
+"""
+''')
+
+    def _add_module_init(self):
+        self._write_model("__init__", f'''"""
+{self._models_module_description}
+"""
+''')
+
+    def _add_exported_exception(self, exception_name: str):
+        with open(os.path.join(self._exceptions_path, "__init__.py"), "a") as f:
+            f.write(f'from .{exception_name} import {exception_name}')
+
+    def _add_exported_module(self, module_name: str):
+        with open(os.path.join(self._models_path, "__init__.py"), "a") as f:
+            f.write(f'from .{module_name} import {module_name}')
+
+    def _add_all_exports(self, exports: List[str], is_exception: bool):
+        ret = "\n__all__ = [\n"
+        i = 0
+        tot = len(exports)
+        for export in exports:
+            to_write += f'    "{export}"'
+            i += 1
+            if i != tot:
+                ret += ","
+            ret += "\n"
+
+        ret += "\n"
+        path = self._exceptions_path
+        if not is_exception:
+            path = self._models_path
+        with open(os.path.join(path, "__init__.py"), "a") as f:
+            f.write(ret)
+
     def build_models(self, schemas: Dict[str, Schema]):
         """Build the schemas and write them inside of the model folder.
         
@@ -344,6 +386,10 @@ class {exception_name}({main_class_name}):
         :type schemas: Dict[str, Schema]
         """
         self._write_base_exception()
+        self._write_init_exception()
+        self._write_init_module()
+        exported_exceptions = []
+        exported_modules = []        
         for schema_name in schemas:
             # We will handle errors later
             if "Error" in schema_name:
@@ -370,6 +416,8 @@ class {exception_name}({main_class_name}):
 '''
                 to_write += self._add_exception_constructor()
                 self._write_exception(schema_name, to_write)
+                self._add_exported_exception(schema_name)
+                exported_exceptions.append(schema_name)
             else:
                 schema = schemas[schema_name]
                 to_write = ""
@@ -378,3 +426,7 @@ class {exception_name}({main_class_name}):
                     _property = schema["properties"][property_name]
                     to_write += self._add_property(property_name, _property, schema["example"][property_name])
                 self._write_model(schema_name, to_write)
+                self._add_exported_module(schema_name)
+                exported_modules.append(schema_name)
+        self._add_all_exports(exported_exceptions, True)
+        self._add_all_exports(exported_modules, False)
