@@ -602,11 +602,11 @@ class {self._class_name}Sync:
                 application_json = get["responses"][response_code]["content"]["application/json"]
                 if "schema" in application_json:
                     exception_thrown = extract_schema_name_from_ref(application_json["schema"]["$ref"])
-                    ret += f'        @raises {exception_thrown}: {get["responses"][response_code]["description"]}\n'
+                    ret += f'        :raises {exception_thrown}: {get["responses"][response_code]["description"]}\n'
                 elif "oneOf" in application_json:
                     possible_exceptions = application_json["oneOf"]
                     for exception in possible_exceptions:
-                        ret += f'        @raises {extract_schema_name_from_ref(exception["$ref"])}: {exception["description"]}\n'
+                        ret += f'        :raises {extract_schema_name_from_ref(exception["$ref"])}: {exception["description"]}\n'
 
         return ret
 
