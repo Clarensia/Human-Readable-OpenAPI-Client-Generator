@@ -363,7 +363,7 @@ class {exception_name}({main_class_name}):
         i = 0
         tot = len(exports)
         for export in exports:
-            to_write += f'    "{export}"'
+            ret += f'    "{export}"'
             i += 1
             if i != tot:
                 ret += ","
