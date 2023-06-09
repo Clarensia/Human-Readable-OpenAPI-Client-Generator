@@ -28,6 +28,6 @@ can easily be generated from the SDK created.
 - [x] Change tests so that they import from the module
 - [x] Change the main files so that they import the models and exceptions correctly
 - [x] Change files so that a newline is not added on top of them
-- [ ] Remove asdict import in tests when it is not needed (for example the decimals call)
+- [x] Remove asdict import in tests when it is not needed (for example the decimals call)
 - [x] Add example for method calls
 - [x] Change @raises to :raises Exception:
