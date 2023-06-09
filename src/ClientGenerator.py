@@ -111,7 +111,7 @@ class ClientGenerator:
             sys.exit(1)
 
     def _create_package_init_file(self):
-        with open(self._package_folder, "__init__.py", "w+") as f:
+        with open(os.path.join(self._package_folder, "__init__.py"), "w+") as f:
             f.write(f'''"""
 {self._config["package"]["description"]}
 """
@@ -122,7 +122,7 @@ __version__ = "{self._config["package"]["version"]}"
 ''')
 
     def _add_all_to_init(self):
-        with open(self._package_folder, "__init__.py", "a") as f:
+        with open(os.path.join(self._package_folder, "__init__.py"), "a") as f:
             f.write(f'\n__all__ = {self._config["package"]["all-exports"]}\n')
 
     def _init_dest_folder(self):
@@ -138,8 +138,8 @@ __version__ = "{self._config["package"]["version"]}"
                 sys.exit(1)
             os.mkdir(self._dest_folder)
 
-        os.mkdir(self._dest_folder, "src")
-        os.mkdir(self._dest_folder, "src", self._config["package"]["name"])
+        os.mkdir(os.path.join(self._dest_folder, "src"))
+        os.mkdir(os.path.join(self._dest_folder, "src", self._config["package"]["name"]))
         os.mkdir(self._models_folder)
         os.mkdir(self._exceptions_folder)
         os.mkdir(self._test_folder)
