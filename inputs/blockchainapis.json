@@ -339,7 +339,7 @@
                 "tags": [
                     "exchanges"
                 ],
-                "summary": "Get the amount of token1 that you will get after selling amountIn token0",
+                "summary": "Get the amount of tokenOut that you will get after selling amountIn tokenIn",
                 "operationId": "amountOut_v0_exchanges_pairs_amountOut_get",
                 "parameters": [
                     {
@@ -384,12 +384,12 @@
                         "in": "query"
                     },
                     {
-                        "description": "The amount of token0 that you sell",
+                        "description": "The amount of tokenIn that you sell",
                         "required": true,
                         "schema": {
                             "title": "Amountin",
                             "type": "integer",
-                            "description": "The amount of token0 that you sell"
+                            "description": "The amount of tokenIn that you sell"
                         },
                         "example": 1000000000000000000,
                         "name": "amountIn",
@@ -453,7 +453,7 @@
                 "tags": [
                     "exchanges"
                 ],
-                "summary": "Get the amount of token0 that you need to sell in order to get amountIn token1",
+                "summary": "Get the amount of tokenIn that you need to sell in order to get amountOut tokenOut",
                 "operationId": "amountIn_v0_exchanges_pairs_amountIn_get",
                 "parameters": [
                     {
@@ -498,12 +498,12 @@
                         "in": "query"
                     },
                     {
-                        "description": "The amount of token1 that you are trying to get",
+                        "description": "The amount of tokenOut that you are trying to get",
                         "required": true,
                         "schema": {
                             "title": "Amountout",
                             "type": "integer",
-                            "description": "The amount of token1 that you are trying to get"
+                            "description": "The amount of tokenOut that you are trying to get"
                         },
                         "example": 1000000000000000000,
                         "name": "amountOut",
@@ -1425,7 +1425,7 @@
                     "status_code": 422
                 }
             },
-            "TooManyRequestException": {
+            "TooManyRequestsException": {
                 "title": "TooManyRequestsException",
                 "description": "Thrown when you are doing more request than you are allowed to the API.\n\nTo prevent this exception you can:\n- Lower the amount of requests that you make to the API per second\n- Upgrade your subscription at: https://dashboard.blockchainapis.io/",
                 "type": "object",
