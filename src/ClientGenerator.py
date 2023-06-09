@@ -151,8 +151,8 @@ __version__ = "{self._config["package"]["version"]}"
         create_requirements(self._dest_folder)
         create_gitignore(self._dest_folder)
         self._create_package_init_file()
-        self._main_class_generator.generate_main_class(open_api_file)
-        self._main_class_generator_sync.generate_main_class(open_api_file)
+        self._main_class_generator.generate_main_class(open_api_file, self._package_folder)
+        self._main_class_generator_sync.generate_main_class(open_api_file, self._package_folder)
         schemas: Dict[str, Schema] = open_api_file["components"]["schemas"]
         self._model_generator.build_models(schemas)
         self._test_generator.generate_tests(open_api_file["paths"])

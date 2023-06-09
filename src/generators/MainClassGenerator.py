@@ -787,7 +787,16 @@ class {self._class_name}Sync:
         """
         return [schema_name for schema_name in schemas if "Exception" in schema_name]
 
-    def generate_main_class(self, open_api_file: OpenAPI):
+    def _add_export_to_package(self):
+        """Append to the __init__.py file in order to allow it to export the current module
+        """
+        with open(self._result_folder, "a") as f:
+            if self._is_async:
+                f.write(f'from .{self._class_name} import {self._class_name}\n')
+            else:
+                f.write(f'from .{self._class_name}Sync import {self._class_name}Sync\n')
+
+    def generate_main_class(self, open_api_file: OpenAPI, package_folder: str):
         main_class_text = ""
         exception_names = self._get_list_of_exceptions(open_api_file["components"]["schemas"])
         main_class_text += self._add_necessary_imports(open_api_file["paths"], open_api_file["components"]["schemas"], exception_names)
@@ -802,3 +811,4 @@ class {self._class_name}Sync:
             main_class_text += "\n"
 
         self._write_main_class(main_class_text)
+        self._add_export_to_package()
