@@ -76,9 +76,11 @@ class ClientGenerator:
         self._test_folder = os.path.join(self._dest_folder, "tests")
         self._main_class_generator = MainClassGenerator(self._config["name"], self._config["api-url"], self._package_folder, True)
         self._main_class_generator_sync = MainClassGenerator(self._config["name"], self._config["api-url"], self._package_folder, False)
-        self._model_generator = ModelGenerator(self._config["name"], self._models_folder, self._exceptions_folder)
-        self._test_generator = TestGenerator(self._config["name"], self._config["api-url"], self._test_folder, True)
-        self._sync_test_generator = TestGenerator(self._config["name"], self._config["api-url"], self._test_folder, False)
+        self._model_generator = ModelGenerator(self._config["name"], self._models_folder, self._exceptions_folder,
+                                               self._config["exception-module-description"],
+                                               self._config["model-module-description"])
+        self._test_generator = TestGenerator(self._config["name"], self._config["api-url"], self._test_folder, True, self._config["package"]["name"])
+        self._sync_test_generator = TestGenerator(self._config["name"], self._config["api-url"], self._test_folder, False, self._config["package"]["name"])
 
     def _verify_args(self, arguments: Namespace):
         """Verify if the arguments are correct. It prints an error if the arguments

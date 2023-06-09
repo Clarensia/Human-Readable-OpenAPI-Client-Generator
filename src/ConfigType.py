@@ -13,6 +13,6 @@ ConfigType = TypedDict("ConfigType", {
     "name": str,
     "api-url": str,
     "package": PackageType,
-    "model-package-description": str,
-    "exception-package-description": str
+    "model-module-description": str,
+    "exception-module-description": str
 })

@@ -18,7 +18,7 @@ package:
     you can use the BlockchainAPIsSync class.
   # The modules that you want to be exported when someone write from package import *
   all-exports: ["BlockchainAPIs"]
-model-package-description: |
+model-module-description: |
   Contains the models that are returned by the Blockchain APIs instance
   class.
 
@@ -55,7 +55,7 @@ model-package-description: |
   # This will throw an exception, use the notation in the example
   # above please.
   print(blockchain_instance["blockchain"])
-exception-package-description: |
+exception-module-description: |
   Contains the Exceptions that can be thrown from
   Blockchain APIs
 
