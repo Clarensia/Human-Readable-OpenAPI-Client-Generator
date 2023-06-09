@@ -27,11 +27,15 @@ class TestGenerator:
     _is_async: bool
     """If we should generate the tests for the async client or the sync one"""
 
-    def __init__(self, api_name: str, api_url: str, test_folder: str, is_async: bool):
+    _module_name: str
+    """The name of the module"""
+
+    def __init__(self, api_name: str, api_url: str, test_folder: str, is_async: bool, module_name: str):
         self._api_name = api_name
         self._api_url = api_url
         self._test_folder = test_folder
         self._is_async = is_async
+        self._module_name = module_name
 
     def _write_test(self, test_file: str, text: str):
         with open(os.path.join(self._test_folder, test_file + ".py"), "w+") as f:
@@ -45,7 +49,7 @@ from typing import Any
 
 from aiohttp import ClientSession
 
-from {self._api_name} import {self._api_name}
+from src.{self._module_name} import {self._api_name}
 from secret_config import API_KEY
 
 class {helper_name}(IsolatedAsyncioTestCase):
@@ -114,7 +118,7 @@ from unittest import TestCase
 from typing import Any
 from urllib.parse import urljoin
 
-from {self._api_name}Sync import {self._api_name}Sync
+from src.{self._module_name} import {self._api_name}Sync
 from secret_config import API_KEY
 
 class {helper_name}(TestCase):
