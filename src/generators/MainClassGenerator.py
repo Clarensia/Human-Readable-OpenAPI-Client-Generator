@@ -438,7 +438,7 @@ class {self._class_name}:
         """Called when you use `async with`.
         
         For example:
-        async with {self._class_name} as blockchain_apis:
+        async with {self._class_name}() as blockchain_apis:
             # do some stuff
             pass
 
