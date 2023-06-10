@@ -449,7 +449,7 @@ class {self._class_name}:
 
     async def __aexit__(self, *_):
         """Called at the end of the `async with` statement in order
-        to free some resources
+        to free the resources used by the API instance.
         """
         await self.close()
 '''
