@@ -335,7 +335,10 @@ class MainClassGenerator:
         ret = f'{indentation}match error_type:\n'
         for exception in exceptions:
             ret += f'{indentation}    case "{exception}":\n'
-            ret += f'{indentation}        raise {exception}(response.status, error_data["detail"]["detail"])\n'
+            if not self._is_async:
+                ret += f'{indentation}        raise {exception}(response.status_code, error_data["detail"]["detail"])\n'
+            else:
+                ret += f'{indentation}        raise {exception}(response.status, error_data["detail"]["detail"])\n'
         ret += f"{indentation}    case unknown:\n"
         ret += indentation + '        raise Exception(f"Unkwnown Exception type: {unknown}.\\nGot this exception while handling:\\n{error_data} with status code: {response.status}")\n'
         return ret
