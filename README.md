@@ -31,3 +31,6 @@ can easily be generated from the SDK created.
 - [x] Remove asdict import in tests when it is not needed (for example the decimals call)
 - [x] Add example for method calls
 - [x] Change @raises to :raises Exception:
+- [ ] Add "additional code" and "additional tests" for some hand-written helper method that
+      we want to add to the client
+- [ ] For the "decimals" endpoint fix the exception that is thrown to the "token not found" exception.
