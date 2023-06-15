@@ -21,6 +21,13 @@ The generated client will be very simple, for example in Python:
 It will use Async features and be documented using sphinx for Python. This way a Documentation
 can easily be generated from the SDK created.
 
+## The `inputs` folder
+
+The `inputs` folder contains:
+- `blockchainapis.json`: You json input file from OpenAPI
+- `config.yml`: Some additional config
+- `additional`: A folder containing some additional code that is appenned to the result.
+
 ## TODO
 
 - [x] Make the destination an already ready module
