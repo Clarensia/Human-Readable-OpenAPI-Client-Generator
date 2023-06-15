@@ -8,6 +8,7 @@ from argparse import Namespace
 from typing import Dict
 
 from src.ConfigType import ConfigType
+from src.generators.AdditionalGenerator import AdditionalGenerator
 from src.generators.create_requirements import create_requirements
 from src.generators.create_gitignore import create_gitignore
 from src.generators.MainClassGenerator import MainClassGenerator
@@ -81,6 +82,7 @@ class ClientGenerator:
                                                self._config["model-module-description"])
         self._test_generator = TestGenerator(self._config["name"], self._config["api-url"], self._test_folder, True, self._config["package"]["name"])
         self._sync_test_generator = TestGenerator(self._config["name"], self._config["api-url"], self._test_folder, False, self._config["package"]["name"])
+        self._additional_generator = AdditionalGenerator(arguments.additional, self._package_folder)
 
     def _verify_args(self, arguments: Namespace):
         """Verify if the arguments are correct. It prints an error if the arguments
@@ -160,3 +162,5 @@ __version__ = "{self._config["package"]["version"]}"
         self._test_generator.generate_tests(open_api_file["paths"])
         self._sync_test_generator.generate_tests(open_api_file["paths"])
         self._add_all_to_init()
+        # Once we finish we append the additional
+        self._additional_generator.append_additional()
