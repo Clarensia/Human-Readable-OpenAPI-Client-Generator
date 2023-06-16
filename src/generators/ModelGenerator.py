@@ -320,10 +320,15 @@ class Unknown{self._api_name}Exception({main_class_name}):
     """
     
     status_code: int
-    """The error code returned by the API"""
+    """The status code returned by the API"""
     
-    
+    detail: str
+    """The details of the exception"""
+
 '''
+        text += self._add_exception_constructor()
+        
+        self._write_exception(f"Unknown{self.api_name}Exception", text)
 
     def _write_name_and_description_of_exception(self, exception_name: str, description: str) -> str:
         """Write the first few lines of the exception which are the name and the
@@ -349,8 +354,8 @@ class {exception_name}({main_class_name}):
 
     def _add_exception_constructor(self) -> str:
         return '''
-    def __init__(self, error_code: int, detail: str):
-        super().__init__(error_code, detail)    
+    def __init__(self, status_code: int, detail: str):
+        super().__init__(status_code, detail)    
 '''
 
     def _write_init_exception(self):
