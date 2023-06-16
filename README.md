@@ -41,4 +41,4 @@ The `inputs` folder contains:
 - [x] Add "additional code" and "additional tests" for some hand-written helper method that
       we want to add to the client
 - [x] For the "decimals" endpoint fix the exception that is thrown to the "token not found" exception.
-- [ ] Add "UnknownException" for the exception that we don't know which one it is
+- [x] Add "UnknownException" for the exception that we don't know which one it is
