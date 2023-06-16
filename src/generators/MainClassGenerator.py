@@ -393,14 +393,16 @@ class MainClassGenerator:
         ret += '            return await response.json()\n'
         return ret        
 
-    def _add_do_request_method_sync(self, exceptions: List[str]) -> str:
+    def _add_do_request_method_sync(self, exceptions: List[str], exception_docs: List[str]) -> str:
         ret = f'''
     def _do_request(self, path: str, params: Dict[str, Any] | None = None) -> Dict[str, Any]:
         """Make a raw API request (that return the json result).
         
         It makes the request in a synchronous way and you don't need to close the
         BlockchainAPIs instance.
-
+'''
+        ret += self._add_do_request_exception_docs(exceptions, exception_docs)
+        ret += '''
         :param path: The path of the request
         :type path: str
         :param params: The optional query parameters of the request, defaults to None
@@ -419,7 +421,22 @@ class MainClassGenerator:
         ret += "        return response.json()\n"
         return ret
 
-    def _add_class_begining(self, infos: Info, exceptions: List[str]) -> str:
+    def _get_exception_docs(self, exceptions: List[str], schemas: Dict[str, Schema]) -> List[str]:
+        """Get the documentation of each exceptions and return it in the right order
+
+        :param exceptions: The list of exceptions that we use
+        :type exceptions: List[str]
+        :param schemas: The schemas returned by BlockchainAPIs
+        :type schemas: Schema
+        :return: The list of exception documentations
+        :rtype: List[str]
+        """
+        ret = []
+        for exception in exceptions:
+            ret.append(schemas[exception]["description"])
+        return ret
+
+    def _add_class_begining(self, infos: Info, exceptions: List[str], exception_docs: List[str]) -> str:
         ret = f'''
 class {self._class_name}:
     """{infos["title"]}
@@ -482,10 +499,10 @@ class {self._class_name}:
         """
         await self.close()
 '''
-        ret += self._add_do_request_method(exceptions)
+        ret += self._add_do_request_method(exceptions, exception_docs)
         return ret
 
-    def _add_class_begining_sync(self, infos: Info, exceptions: List[str]) -> str:
+    def _add_class_begining_sync(self, infos: Info, exceptions: List[str], exception_docs: List[str]) -> str:
         ret = f'''
 class {self._class_name}Sync:
     """{infos["title"]}
@@ -513,7 +530,7 @@ class {self._class_name}Sync:
         self._base_url = "{self._api_url}"
 
 '''
-        ret += self._add_do_request_method_sync(exceptions)
+        ret += self._add_do_request_method_sync(exceptions, exception_docs)
         return ret
 
     def _get_func_param_with_default(self, param: FuncParam) -> str:
@@ -849,10 +866,11 @@ class {self._class_name}Sync:
             else:
                 f.write(f'from .{self._class_name}Sync import {self._class_name}Sync\n')
 
-    def generate_main_class(self, open_api_file: OpenAPI, package_folder: str):
+    def generate_main_class(self, open_api_file: OpenAPI):
         main_class_text = ""
         exception_names = self._get_list_of_exceptions(open_api_file["components"]["schemas"])
         main_class_text += self._add_necessary_imports(open_api_file["paths"], open_api_file["components"]["schemas"], exception_names)
+        exception_docs = self._get_exception_docs(exception_names, open_api_file["components"]["schemas"])
         main_class_text += "\n"
         if self._is_async:
             main_class_text += self._add_class_begining(open_api_file["info"], exception_names)
