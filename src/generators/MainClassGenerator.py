@@ -2,7 +2,7 @@ import json
 import os
 from typing import Any, Dict, List, Tuple
 
-from src.utils import add_indent, convert_type, extract_schema_name_from_ref, get_method_name, is_native_python_type
+from src.utils import add_indent, convert_type, extract_schema_name_from_ref, get_method_name, get_short_description, is_native_python_type
 from src.generators.generator_types import FuncParam, Get, Info, OpenAPI, OpenAPIPath, Property, Schema
 
 
@@ -433,7 +433,7 @@ class MainClassGenerator:
         """
         ret = []
         for exception in exceptions:
-            ret.append(schemas[exception]["description"])
+            ret.append(get_short_description(schemas[exception]["description"]))
         return ret
 
     def _add_class_begining(self, infos: Info, exceptions: List[str], exception_docs: List[str]) -> str:
