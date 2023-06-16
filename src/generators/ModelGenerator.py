@@ -328,7 +328,7 @@ class Unknown{self._api_name}Exception({main_class_name}):
 '''
         text += self._add_exception_constructor()
         
-        self._write_exception(f"Unknown{self.api_name}Exception", text)
+        self._write_exception(f"Unknown{self._api_name}Exception", text)
 
     def _write_name_and_description_of_exception(self, exception_name: str, description: str) -> str:
         """Write the first few lines of the exception which are the name and the

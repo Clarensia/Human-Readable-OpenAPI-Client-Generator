@@ -340,7 +340,7 @@ class MainClassGenerator:
             else:
                 ret += f'{indentation}        raise {exception}(response.status, error_data["detail"]["detail"])\n'
         ret += f"{indentation}    case unknown:\n"
-        ret += indentation + f'        raise Unknown{self._class_name}Exception(f"Unkwnown Exception type: {{unknown}}.\\nGot this exception while handling:\\n{{error_data}} with status code: {{response.status}}")\n'
+        ret += indentation + f'        raise Unknown{self._class_name}Exception(response.status, f"Unkwnown Exception type: {{unknown}}.\\nGot this exception while handling:\\n{{error_data}} with status code: {{response.status}}")\n'
         return ret
 
     def _add_do_request_exception_docs(self, exceptions: List[str], exception_docs: List[str]) -> str:
