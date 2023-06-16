@@ -328,6 +328,9 @@ class MainClassGenerator:
         for exception in exceptions:
             ret += f"from .exceptions import {exception}\n"
 
+        # Add import for unknown exception
+        ret += f"from .exceptions import Unknown{self._class_name}Exception\n"
+
         return ret
 
     def _match_error_type(self, exceptions: List[str], indent: int) -> str:
