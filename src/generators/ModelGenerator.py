@@ -417,7 +417,7 @@ class {exception_name}({main_class_name}):
                 schema = schemas[schema_name]
                 to_write = ""
                 to_write += self._write_name_and_description_of_exception(schema_name, schema["description"])
-                to_write += f'''    status_code: str
+                to_write += f'''    status_code: int
     """The error code returned by the call to the API
     
     For example: {schema["example"]["status_code"]}
