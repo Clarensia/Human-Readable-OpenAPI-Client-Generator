@@ -873,9 +873,9 @@ class {self._class_name}Sync:
         exception_docs = self._get_exception_docs(exception_names, open_api_file["components"]["schemas"])
         main_class_text += "\n"
         if self._is_async:
-            main_class_text += self._add_class_begining(open_api_file["info"], exception_names)
+            main_class_text += self._add_class_begining(open_api_file["info"], exception_names, exception_docs)
         else:
-            main_class_text += self._add_class_begining_sync(open_api_file["info"], exception_names)
+            main_class_text += self._add_class_begining_sync(open_api_file["info"], exception_names, exception_docs)
         main_class_text += "\n"
         for path in open_api_file["paths"]:
             main_class_text += self._add_method(path, open_api_file["paths"][path], open_api_file["components"]["schemas"])
