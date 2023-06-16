@@ -35,7 +35,7 @@ class AdditionalGenerator:
 
             for file_in_folder in os.listdir(curr_path):
                 if file_in_folder == "tests":
-                    self._append_tests_from_folder(curr_path)
+                    self._append_tests_from_folder(os.path.join(curr_path, file_in_folder))
                 else:
                     self._append_additional_rec(curr_path, curr_dest_path, file_in_folder)
 
