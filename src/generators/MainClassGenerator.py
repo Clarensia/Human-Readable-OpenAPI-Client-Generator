@@ -481,7 +481,16 @@ class {self._class_name}:
         """Close the async session object.
         
         You must call this method at the end of your program or when you have finished
-        working with BlockchainAPIs.
+        working with {self._class_name}.
+        
+        Please note, if you do:
+        ```py
+        async with {self._class_name}() as instance:
+            # do some calls...
+            pass
+        ```
+        
+        The instance is automatically closed at the end of the async with.
         """
         await self._session.close()
 
