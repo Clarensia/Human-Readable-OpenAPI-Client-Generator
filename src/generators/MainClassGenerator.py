@@ -374,6 +374,7 @@ class MainClassGenerator:
         
         This method additionaly adds the user API key to the request if it is present.
 '''
+        ret += "\n"
         ret += self._add_do_request_exception_docs(exceptions, exception_docs)
         ret += '''
         :param path: The path to the request
@@ -401,6 +402,7 @@ class MainClassGenerator:
         It makes the request in a synchronous way and you don't need to close the
         BlockchainAPIs instance.
 '''
+        ret += "\n"
         ret += self._add_do_request_exception_docs(exceptions, exception_docs)
         ret += '''
         :param path: The path of the request
