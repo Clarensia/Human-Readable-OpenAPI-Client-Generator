@@ -1,3 +1,4 @@
+
     def get_token_decimal_form(self, amount: int, decimals: int) -> str:
         """Convert a token from his unsigned integer form to his decimal form.
         
