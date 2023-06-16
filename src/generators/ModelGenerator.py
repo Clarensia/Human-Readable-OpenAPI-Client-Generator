@@ -295,19 +295,35 @@ class {model_name}:
 class {self._api_name}Exception(Exception, ABC):
     """Thrown when the API returns us an Exception"""
     
-    error_code: int
-    """The error code returned by the API"""
+    status_code: int
+    """The status code returned by the API"""
     
     detail: str
     """Some details about the error that occured"""
     
-    def __init__(self, error_code: int, detail: str):
-        self.error_code = error_code
+    def __init__(self, status_code: int, detail: str):
+        self.status_code = status_code
         self.detail = detail
-        super().__init__(f"{{self.error_code}} - {{self.detail}}")
+        super().__init__(f"{{self.status_code}} - {{self.detail}}")
 
 '''
         self._write_exception(f"{self._api_name}Exception", text)
+
+    def _write_unknown_exception(self):
+        """Create the unknown exception"""
+        main_class_name = f'{self._api_name}Exception'
+        text = f'''from . import {main_class_name}
+
+class Unknown{self._api_name}Exception({main_class_name}):
+    """
+    Thrown when an unknown exception was returned by the API
+    """
+    
+    status_code: int
+    """The error code returned by the API"""
+    
+    
+'''
 
     def _write_name_and_description_of_exception(self, exception_name: str, description: str) -> str:
         """Write the first few lines of the exception which are the name and the
@@ -387,6 +403,7 @@ class {exception_name}({main_class_name}):
         :type schemas: Dict[str, Schema]
         """
         self._write_base_exception()
+        self._write_unknown_exception()
         self._write_init_exception()
         self._add_exported_exception(f"{self._api_name}Exception")
         self._write_init_model()
