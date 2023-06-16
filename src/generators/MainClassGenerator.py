@@ -343,13 +343,39 @@ class MainClassGenerator:
         ret += indentation + '        raise Exception(f"Unkwnown Exception type: {unknown}.\\nGot this exception while handling:\\n{error_data} with status code: {response.status}")\n'
         return ret
 
-    def _add_do_request_method(self, exceptions: List[str]) -> str:
-        ret = f'''
+    def _add_do_request_exception_docs(self, exceptions: List[str], exception_docs: List[str]) -> str:
+        """Add the raises to the description of the _do_request method
+
+        :raises Exception: When the length of exceptions is not the same as the length of exceptions docs
+
+        :param exceptions: The list of exceptions that the API can throw
+        :type exceptions: List[str]
+        :param exception_docs: The list of documentation of these exceptions, need to match 1-1 each exceptions
+                               (description has to be at the same index as the exception_docs)
+        :type exception_docs: List[str]
+        :return: The documentation as we have to write it to _do_request
+        :rtype: str
+        """
+        ret = ""
+        if len(exceptions) != len(exception_docs):
+            raise Exception(f"The len of exceptions: {len(exceptions)} is different from the lenght of the docs: {len(exception_docs)}")
+
+        for i in range(len(exceptions)):
+            ret += f'        :raises {exceptions[i]}: {exception_docs[i]}\n'
+
+        # Add the UnknownException
+        ret += '        :raises Exception: When an unknown exception happens\n'
+        return ret
+
+    def _add_do_request_method(self, exceptions: List[str], exception_docs: List[str]) -> str:
+        ret = '''
     async def _do_request(self, path: str, params: Dict[str, Any] | None = None) -> Dict[str, Any]:
         """Make raw API request (that return the json result).
         
         This method additionaly adds the user API key to the request if it is present.
-
+'''
+        ret += self._add_do_request_exception_docs(exceptions, exception_docs)
+        ret += '''
         :param path: The path to the request
         :type path: str
         :param params: The optional query parameters of the request, defaults to None
